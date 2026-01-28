@@ -34,6 +34,12 @@ const Sidebar = () => {
           allowed: ['Manager', 'TL', 'Employee'] 
         },
         { 
+        name: 'Team Lead Portal', 
+        path: '/teamlead', 
+        icon: <Users size={18} />, 
+        allowed: ['TL'] // Only TLs see this specific view
+      },
+        { 
           name: 'HR Management', 
           path: '/hrManagement', 
           icon: <Fingerprint size={18} />, // This will now work!

@@ -16,7 +16,7 @@ import Settings from './components/Settings';
 import Sales from './components/Sales';
 import Recruitment from './components/Recruitment';
 import HRManagement from './components/hrManagement';
-import TeamLeadDashboard from './components/TeamLead';
+import TeamLeadDashboard from './components/TeamLead'; // Adjust path as needed
 
 import { Bell, Search } from 'lucide-react';
 import './App.css';
@@ -57,15 +57,15 @@ const RoleSwitcher = () => {
 
 // --- SMART DASHBOARD LOGIC ---
 // 2. This decides which Dashboard to show based on role
+// --- SMART DASHBOARD LOGIC ---
 const DashboardHome = () => {
   const { user } = useUser();
 
-  // If Employee, show the new Employee Dashboard
-  if (user.role === 'Employee') {
-    return <EmployeeDashboard />;
-  }
+  if (user.role === 'Employee') return <EmployeeDashboard />;
   
-  // If Manager or TL, show the Admin Overview
+  // ADD THIS: If TL, show Team Lead Dashboard as home
+  if (user.role === 'TL') return <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />;
+
   return (
     <div className="glass-card">
       <h3 className="main-title">Admin Dashboard Overview</h3>
@@ -123,7 +123,7 @@ function App() {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/recruitment" element={<Recruitment />} />
-                
+                <Route path="/TeamLead" element={<TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />} />
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
