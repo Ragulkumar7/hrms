@@ -1,25 +1,25 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { UserProvider, useUser } from './context/UserContext'; // 1. Import Context
+import { UserProvider, useUser } from './context/UserContext'; 
 
-// Components
+// --- COMPONENT IMPORTS ---
 import Sidebar from './components/Sidebar';
 import Accounts from './components/Accounts';
 import Attendance from './components/Attendance';
 import ITOperations from './components/ITOperations';
-import Employees from './components/Employees';           // New Import
-import ManagerDashboard from './components/ManagerDashboard'; // New Import
+import Employees from './components/Employees';
+import ManagerDashboard from './components/ManagerDashboard';
 import TaskManagement from './components/TaskManagement';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
 import Sales from './components/Sales';
 import Recruitment from './components/Recruitment';
+import ThemeCustomizer from './components/ThemeCustomizer'; // Import Theme Customizer
 
 import { Bell, Search } from 'lucide-react';
 import './App.css';
 
 // --- INTERNAL COMPONENT: Dynamic Header Profile ---
-// This ensures the top right corner updates when you switch roles
 const HeaderProfile = () => {
   const { user } = useUser();
   return (
@@ -55,15 +55,17 @@ const RoleSwitcher = () => {
 
 function App() {
   return (
-    // 2. Wrap EVERYTHING in UserProvider
     <UserProvider>
       <Router>
         <div className="app-wrapper">
           
+          {/* 1. Sidebar Navigation */}
           <Sidebar />
 
+          {/* 2. Main Content Area */}
           <main className="main-content">
-            {/* Top Navigation Bar */}
+            
+            {/* Top Header */}
             <header className="top-bar">
               <div className="search-box">
                 <Search size={18} color="#888" />
@@ -71,12 +73,11 @@ function App() {
               </div>
               <div className="user-nav">
                 <Bell size={20} className="icon-btn" style={{ cursor: 'pointer' }} />
-                
-                {/* 3. Use the dynamic profile component */}
                 <HeaderProfile />
               </div>
             </header>
 
+            {/* Page Content Routes */}
             <div className="content-area">
               <Routes>
                 {/* Main Dashboard */}
@@ -90,42 +91,28 @@ function App() {
                   </div>
                 } />
 
-                {/* --- MODULES --- */}
-                
-                {/* 1. Employees (Hiring) */}
+                {/* Modules */}
                 <Route path="/employees" element={<Employees />} />
-
-                {/* 2. Manager Portal (Hierarchy & Shuffling) */}
                 <Route path="/manager" element={<ManagerDashboard />} />
-
-                {/* 3. Payroll (Accounts) */}
                 <Route path="/payroll" element={<Accounts />} />
-
-                {/* 4. IT Operations */}
                 <Route path="/it" element={<ITOperations />} />
-
-                {/* 5. Attendance */}
                 <Route path="/attendance" element={<Attendance />} />
-
                 <Route path="/tasks" element={<TaskManagement />} />
-
                 <Route path="/reports" element={<Reports />} />
-
                 <Route path="/settings" element={<Settings />} />
-
                 <Route path="/sales" element={<Sales />} />
-
                 <Route path="/recruitment" element={<Recruitment />} />
 
-                {/* --- FALLBACK --- */}
-                {/* The wildcard must always be LAST */}
+                {/* Fallback Route (Must be last) */}
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
             </div>
           </main>
 
-          {/* 4. Add the Role Switcher for testing */}
+          {/* 3. Floating Tools */}
+          <ThemeCustomizer />
           <RoleSwitcher />
+          
         </div>
       </Router>
     </UserProvider>

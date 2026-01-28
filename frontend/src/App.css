@@ -1379,3 +1379,173 @@ input:checked + .slider:before { transform: translateX(20px); }
 .int-time button {
   background: none; border: none; color: #2563eb; font-size: 12px; font-weight: 700; cursor: pointer;
 }
+
+/* --- THEME CUSTOMIZER STYLES --- */
+
+/* Floating Button */
+.theme-float-btn {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--primary-orange);
+  color: white;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px 0 0 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  cursor: pointer;
+  z-index: 9999;
+  transition: background 0.3s;
+}
+
+.theme-float-btn:hover {
+  background: #e68a39;
+}
+
+.spin-icon {
+  animation: spin 4s linear infinite;
+}
+
+/* Overlay & Panel */
+.theme-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(2px);
+  z-index: 10000;
+}
+
+.theme-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 320px;
+  background: white;
+  box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+  z-index: 10001;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.theme-panel.open {
+  transform: translateX(0);
+}
+
+/* Header */
+.theme-header {
+  padding: 20px;
+  background: #111827; /* Dark header */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.theme-header h2 { font-size: 18px; margin: 0; }
+.theme-header p { font-size: 12px; color: #9ca3af; margin: 0; }
+
+.close-btn {
+  background: none; border: none; color: white; cursor: pointer;
+}
+.close-btn:hover { color: #ef4444; }
+
+/* Body Content */
+.theme-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.theme-section {
+  margin-bottom: 30px;
+}
+
+.theme-section h3 {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+/* Layout Grid */
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.layout-btn {
+  background: none; border: none; cursor: pointer;
+  display: flex; flex-direction: column; alignItems: center;
+}
+
+.layout-preview {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  background: #f8fafc;
+  position: relative;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+.layout-btn:hover .layout-preview { border-color: #cbd5e1; }
+
+.layout-btn.active .layout-preview {
+  border-color: var(--primary-orange);
+  background: #fff7ed;
+}
+
+.check-icon {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--primary-orange);
+}
+
+/* Toggles */
+.mode-toggles {
+  display: flex; gap: 20px;
+}
+
+.radio-label {
+  display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; cursor: pointer;
+}
+
+.color-options {
+  display: flex; gap: 15px;
+}
+
+.color-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 4px solid transparent; cursor: pointer; shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.color-btn.active {
+  border-color: white;
+  box-shadow: 0 0 0 2px var(--primary-orange);
+}
+
+/* Footer */
+.theme-footer {
+  padding: 20px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.reset-btn {
+  padding: 10px; border: 1px solid #e2e8f0; background: white; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer;
+}
+.buy-btn {
+  padding: 10px; border: none; background: #ef4444; color: white; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer;
+}
