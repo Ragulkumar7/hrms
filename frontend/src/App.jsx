@@ -15,6 +15,7 @@ import Reports from './components/Reports';
 import Settings from './components/Settings';
 import Sales from './components/Sales';
 import Recruitment from './components/Recruitment';
+import HRManagement from './components/hrManagement';
 
 import { Bell, Search } from 'lucide-react';
 import './App.css';
@@ -101,7 +102,7 @@ function App() {
                 
                 {/* 3. Use the Smart Wrapper for the Home Route */}
                 <Route path="/" element={<DashboardHome />} />
-
+                <Route path="/hrManagement" element={<HRManagement />} />
                 {/* --- MODULES --- */}
                 <Route path="/employees" element={<Employees />} />
                 <Route path="/manager" element={<ManagerDashboard />} />

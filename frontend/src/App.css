@@ -1379,3 +1379,152 @@ input:checked + .slider:before { transform: translateX(20px); }
 .int-time button {
   background: none; border: none; color: #2563eb; font-size: 12px; font-weight: 700; cursor: pointer;
 }
+
+/* hrManagement
+/* HR Management Component Styles */
+.animate-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Status Badges */
+.bg-green-100 { background-color: #dcfce7; }
+.text-green-600 { color: #16a34a; }
+.bg-orange-100 { background-color: #ffedd5; }
+.text-orange-600 { color: #ea580c; }
+.bg-red-100 { background-color: #fee2e2; }
+.text-red-600 { color: #dc2626; }
+.bg-blue-50 { background-color: #eff6ff; }
+.text-blue-600 { color: #2563eb; }
+
+/* Buttons & Inputs */
+.bg-orange-500 { background-color: #f97316; }
+.hover\:bg-orange-600:hover { background-color: #ea580c; }
+.border-orange-500 { border-color: #f97316; }
+.text-orange-500 { color: #f97316; }
+
+/* Table Styles */
+.divide-y > * + * {
+  border-top-width: 1px;
+}
+
+/* Cards & Containers */
+.bg-orange-50 { background-color: #fff7ed; }
+.bg-purple-50 { background-color: #faf5ff; }
+.text-purple-600 { color: #9333ea; }
+
+/* Role Switcher Dev Tool Fix */
+.role-switcher-dev {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+  z-index: 9999;
+}
+
+/* Add these to your App.css to support the HR Management UI */
+.flex { display: flex; }
+.gap-4 { gap: 1rem; }
+.p-6 { padding: 1.5rem; }
+.shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+.rounded-xl { border-radius: 0.75rem; }
+.bg-white { background-color: #ffffff; }
+.justify-between { justify-content: space-between; }
+.items-center { align-items: center; }
+
+/* --- HR MANAGEMENT UI HELPERS --- */
+.hr-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #f1f5f9;
+}
+
+.tab-container {
+  display: flex;
+  gap: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  color: #f97316;
+  border-bottom-color: #f97316;
+}
+
+/* Status Badges for the Table */
+.badge-active {
+  background-color: #dcfce7;
+  color: #166534;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-leave {
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+/* Add to bottom of App.css */
+
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px; /* Spacing between rows */
+}
+
+.custom-table th {
+  padding: 12px 20px;
+  color: #94a3b8;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.custom-table td {
+  padding: 20px;
+  background: transparent;
+  vertical-align: middle;
+}
+
+.avatar-small {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}

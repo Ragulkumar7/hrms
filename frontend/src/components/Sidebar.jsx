@@ -13,7 +13,8 @@ import {
   Cpu,
   FileText,
   LogOut,
-  ShieldCheck // Icon for Manager Portal
+  ShieldCheck, // Icon for Manager Portal
+  Fingerprint
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -31,6 +32,12 @@ const Sidebar = () => {
           path: '/', 
           icon: <LayoutDashboard size={18} />, 
           allowed: ['Manager', 'TL', 'Employee'] 
+        },
+        { 
+          name: 'HR Management', 
+          path: '/hrManagement', 
+          icon: <Fingerprint size={18} />, // This will now work!
+          allowed: ['Manager', 'TL'] 
         },
         { 
           name: 'Employees Directory', 
