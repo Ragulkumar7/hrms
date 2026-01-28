@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useUser } from '../context/UserContext'; // 1. Import User Context
 import { 
   LayoutDashboard, 
   CalendarCheck, 
@@ -11,51 +12,124 @@ import {
   Settings,
   Cpu,
   FileText,
-  LogOut
+  LogOut,
+  ShieldCheck // Icon for Manager Portal
 } from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();
+  const { user } = useUser(); // 2. Get current logged-in role
 
-  // Unified navigation structure with Categories
+  // 3. Define the Menu with 'allowed' roles
+  // Roles: 'Manager', 'TL', 'Employee'
   const sections = [
     {
       label: 'Main',
       items: [
-        { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={18} /> },
-        { name: 'Employees', path: '/employees', icon: <Users size={18} /> },
+        { 
+          name: 'Dashboard', 
+          path: '/', 
+          icon: <LayoutDashboard size={18} />, 
+          allowed: ['Manager', 'TL', 'Employee'] 
+        },
+        { 
+          name: 'Employees Directory', 
+          path: '/employees', 
+          icon: <Users size={18} />, 
+          allowed: ['Manager'] // Only Manager sees full directory
+        },
+        // NEW LINK: The Manager/TL Portal from your note
+        { 
+          name: 'Manager Portal', 
+          path: '/manager', 
+          icon: <ShieldCheck size={18} />, 
+          allowed: ['Manager', 'TL'] // TLs and Managers see this
+        },
       ]
     },
     {
       label: 'Operations',
       items: [
-        { name: 'Attendance', path: '/attendance', icon: <CalendarCheck size={18} /> },      // Section 3
-        { name: 'Task Management', path: '/tasks', icon: <ClipboardList size={18} /> },     // Section 4
-        { name: 'Payroll & Accounts', path: '/payroll', icon: <Banknote size={18} /> },     // Section 5
-        { name: 'IT & Operations', path: '/it', icon: <Cpu size={18} /> },                  // Section 6
-        { name: 'Recruitment', path: '/recruitment', icon: <Briefcase size={18} /> },
-        { name: 'Sales Pipeline', path: '/sales', icon: <TrendingUp size={18} /> },
+        { 
+          name: 'Attendance', 
+          path: '/attendance', 
+          icon: <CalendarCheck size={18} />, 
+          allowed: ['Manager', 'TL', 'Employee'] 
+        },
+        { 
+          name: 'Task Management', 
+          path: '/tasks', 
+          icon: <ClipboardList size={18} />, 
+          allowed: ['Manager', 'TL', 'Employee'] 
+        },
+        { 
+          name: 'Payroll & Accounts', 
+          path: '/payroll', 
+          icon: <Banknote size={18} />, 
+          allowed: ['Manager'] // STRICT: Manager Only
+        },
+        { 
+          name: 'IT & Operations', 
+          path: '/it', 
+          icon: <Cpu size={18} />, 
+          allowed: ['Manager'] // STRICT: Manager Only
+        },
+        { 
+          name: 'Recruitment', 
+          path: '/recruitment', 
+          icon: <Briefcase size={18} />, 
+          allowed: ['Manager'] 
+        },
+        { 
+          name: 'Sales Pipeline', 
+          path: '/sales', 
+          icon: <TrendingUp size={18} />, 
+          allowed: ['Manager', 'TL'] 
+        },
       ]
     },
     {
       label: 'System',
       items: [
-        { name: 'Reports & PDF', path: '/reports', icon: <FileText size={18} /> },
-        { name: 'Settings', path: '/settings', icon: <Settings size={18} /> },
+        { 
+          name: 'Reports & PDF', 
+          path: '/reports', 
+          icon: <FileText size={18} />, 
+          allowed: ['Manager', 'TL'] 
+        },
+        { 
+          name: 'Settings', 
+          path: '/settings', 
+          icon: <Settings size={18} />, 
+          allowed: ['Manager', 'TL', 'Employee'] 
+        },
       ]
     }
   ];
+
+  // 4. AUTOMATION LOGIC: Filter sections based on Role
+  const activeSections = sections.map(section => ({
+    ...section,
+    // Keep only items where allowed roles include the current user role
+    items: section.items.filter(item => item.allowed.includes(user.role))
+  })).filter(section => section.items.length > 0); // Remove empty sections
 
   return (
     <aside className="sidebar">
       {/* Brand Logo Section */}
       <div className="sidebar-header">
         <div className="logo-circle">S</div>
-        <span className="brand-name">SmartHR</span>
+        <div>
+          <span className="brand-name">SmartHR</span>
+          {/* Visual Indicator of who is logged in */}
+          <div style={{fontSize: '10px', color:'#94a3b8', fontWeight:'600'}}>
+             {user.role.toUpperCase()} VIEW
+          </div>
+        </div>
       </div>
 
       <div className="nav-container">
-        {sections.map((section, sIndex) => (
+        {activeSections.map((section, sIndex) => (
           <div key={sIndex} className="nav-section">
             <p className="nav-section-label">{section.label}</p>
             <nav className="nav-menu">
