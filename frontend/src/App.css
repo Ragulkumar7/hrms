@@ -38,18 +38,148 @@ body {
   min-height: 100vh;
 }
 
+/* Update these sections in your App.css */
+
+/* --- TOP BAR ALIGNMENT --- */
+/* --- HEADER ALIGNMENT --- */
 .top-bar {
   height: 65px;
-  background: var(--white);
+  /* Solid white background for the header bar */
+  background: #ffffff !important; 
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 40px;
-  border-bottom: 1px solid var(--border);
+  /* Very light border for a clean look */
+  border-bottom: 1px solid #f1f5f9; 
   position: sticky;
   top: 0;
   z-index: 999;
 }
+
+/* --- SEARCH BAR FIXES --- */
+.search-container {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  /* Uniform light-grey background for the entire pill */
+  background: #f1f5f9; 
+  padding: 8px 18px;
+  border-radius: 50px;
+  width: 320px; 
+  gap: 12px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.search-box:focus-within {
+  background: #ffffff;
+  border-color: #FF9B44;
+  box-shadow: 0 0 0 4px rgba(255, 155, 68, 0.1);
+}
+
+.search-icon {
+  /* Color matches the placeholder text */
+  color: #94a3b8; 
+  flex-shrink: 0;
+}
+
+.search-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 13px;
+  /* Darker text for readability */
+  color: #1e293b; 
+}
+
+/* --- NOTIFICATION SECTION --- */
+.user-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.icon-btn-wrapper {
+  position: relative;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.icon-btn-wrapper:hover {
+  background: #f8fafc;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  background-color: #ef4444;
+  border: 1.5px solid #ffffff;
+  border-radius: 50%;
+}
+
+/* --- NOTIFICATION SECTION --- */
+.user-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.icon-btn-wrapper {
+  position: relative;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.icon-btn-wrapper:hover {
+  background: #f8fafc;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444; /* Red dot */
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+}
+
+/* Ensure icons are centered */
+.icon-btn {
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.icon-btn:hover {
+  background: #f1f5f9;
+}
+
 
 .content-area {
   padding: 40px;

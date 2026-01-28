@@ -16,6 +16,7 @@ import Settings from './components/Settings';
 import Sales from './components/Sales';
 import Recruitment from './components/Recruitment';
 import HRManagement from './components/hrManagement';
+import TeamLeadDashboard from './components/TeamLead';
 
 import { Bell, Search } from 'lucide-react';
 import './App.css';
@@ -87,15 +88,23 @@ function App() {
           <main className="main-content">
             {/* Top Navigation Bar */}
             <header className="top-bar">
-              <div className="search-box">
-                <Search size={18} color="#888" />
-                <input type="text" placeholder="Search operations..." />
-              </div>
-              <div className="user-nav">
-                <Bell size={20} className="icon-btn" style={{ cursor: 'pointer' }} />
-                <HeaderProfile />
-              </div>
-            </header>
+  {/* Left Section: Styled Search Bar */}
+  <div className="search-container">
+    <div className="search-box">
+      <Search size={16} className="search-icon" />
+      <input type="text" placeholder="Search operations..." />
+    </div>
+  </div>
+
+  {/* Right Section: Notification and Profile */}
+  <div className="user-nav">
+    <div className="icon-btn-wrapper">
+      <Bell size={20} className="notification-icon" />
+      <span className="notification-dot"></span>
+    </div>
+    <HeaderProfile />
+  </div>
+</header>
 
             <div className="content-area">
               <Routes>
@@ -114,7 +123,7 @@ function App() {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/recruitment" element={<Recruitment />} />
-
+                
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
