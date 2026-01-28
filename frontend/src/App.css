@@ -1379,3 +1379,126 @@ input:checked + .slider:before { transform: translateX(20px); }
 .int-time button {
   background: none; border: none; color: #2563eb; font-size: 12px; font-weight: 700; cursor: pointer;
 }
+
+/* 1. GLOBAL VARIABLES & RESET */
+:root {
+  --sidebar-width: 260px;
+  --primary-orange: #FF9B44; 
+  --bg-soft: #F4F7F6;
+  --white: #ffffff;
+  --border: #E3E3E3;
+  --text-dark: #333333;
+  --text-gray: #64748b;
+  --text-muted: #94a3b8;
+  --danger: #dc2626;
+  --success: #166534;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: var(--bg-soft);
+  color: var(--text-dark);
+  overflow-x: hidden;
+}
+
+/* 2. LAYOUT STRUCTURE */
+.app-wrapper {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.main-content {
+  background: var(--bg-soft);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar {
+  height: 65px;
+  background: var(--white);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.content-area {
+  padding: 40px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 3. SIDEBAR FOOTER & PROFILE (Fixed image_3f14fc.png issue) */
+.sidebar {
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.nav-container { flex: 1; overflow-y: auto; }
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid #f1f5f9;
+  background: #f8fafc;
+  margin-top: auto;
+}
+
+.footer-profile { display: flex; align-items: center; gap: 12px; }
+
+.footer-avatar {
+  width: 35px; height: 35px; background: var(--primary-orange);
+  color: white; border-radius: 8px; display: flex;
+  align-items: center; justify-content: center; font-weight: bold; font-size: 12px;
+}
+
+.footer-name { font-size: 13px; font-weight: 700; color: #1e293b; margin: 0; }
+.footer-status { font-size: 11px; color: #10b981; margin: 0; }
+
+/* 4. DASHBOARD COMPONENTS */
+.glass-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  margin-bottom: 30px;
+}
+
+.main-title { font-size: 24px; font-weight: 700; color: #1e293b; }
+
+.profile-pill {
+  display: flex; align-items: center; gap: 10px;
+  background: #f8fafc; padding: 6px 14px; border-radius: 30px;
+  border: 1px solid #e2e8f0; font-weight: 600; font-size: 14px;
+}
+
+.avatar-small {
+  width: 28px; height: 28px; background: #e2e8f0;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: #64748b;
+}
+
+/* 5. SEARCH & FORMS */
+.search-box {
+  display: flex; align-items: center; gap: 10px;
+  background: #f1f5f9; padding: 8px 15px; border-radius: 8px; width: 300px;
+}
+
+.search-box input {
+  border: none; background: transparent; outline: none; width: 100%;
+}
