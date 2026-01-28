@@ -1,0 +1,338 @@
+/* 1. GLOBAL VARIABLES & RESET */
+:root {
+  --sidebar-width: 260px;
+  --primary-orange: #FF9B44; 
+  --bg-soft: #F4F7F6;
+  --white: #ffffff;
+  --border: #E3E3E3;
+  --text-dark: #333333;
+  --text-gray: #64748b;
+  --text-muted: #94a3b8;
+  --danger: #dc2626;
+  --success: #166534;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-soft);
+  color: var(--text-dark);
+  overflow-x: hidden;
+}
+
+/* 2. LAYOUT STRUCTURE */
+.app-wrapper {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.main-content {
+  background: var(--bg-soft);
+  min-height: 100vh;
+}
+
+.top-bar {
+  height: 65px;
+  background: var(--white);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.content-area {
+  padding: 40px;
+}
+
+/* 3. LIGHT THEME SIDEBAR */
+.sidebar {
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 25px 25px 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-name {
+  color: #1e293b;
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.logo-circle {
+  width: 32px;
+  height: 32px;
+  background: var(--primary-orange);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(255, 155, 68, 0.3);
+}
+
+.nav-container {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.nav-section-label {
+  padding: 20px 25px 10px;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 1.2px;
+}
+
+.nav-menu {
+  list-style: none;
+}
+
+.nav-item {
+  padding: 12px 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--text-gray);
+  margin: 0 10px;
+  border-radius: 8px;
+}
+
+.nav-item:hover {
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+.nav-item.active {
+  background: rgba(255, 155, 68, 0.08);
+  color: var(--primary-orange);
+  font-weight: 600;
+}
+
+/* 4. PAGE HEADERS & ACTIONS */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.main-title { font-size: 24px; font-weight: 700; color: #1e293b; }
+.sub-title { font-size: 14px; color: var(--text-gray); margin-top: 4px; }
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* 5. DASHBOARD CARDS & GRIDS */
+.glass-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  margin-bottom: 30px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  margin-bottom: 35px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-box.blue { background: #eff6ff; color: #2563eb; }
+.icon-box.green { background: #f0fdf4; color: #16a34a; }
+.icon-box.orange { background: #fff7ed; color: #ea580c; }
+
+.dual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  align-items: start;
+}
+
+/* 6. ADMIN FORMS & INPUTS */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 1fr auto;
+  gap: 15px;
+  margin-top: 20px;
+  align-items: center;
+}
+
+.admin-input, .form-grid select, .form-grid input {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.admin-input:focus, .form-grid input:focus {
+  border-color: var(--primary-orange);
+}
+
+.admin-input.small { width: 65px; }
+.admin-input.hike { color: var(--success); font-weight: 700; }
+
+/* 7. TABLES, PILLS & AUDIT */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table th {
+  background: #f8fafc;
+  text-align: left;
+  padding: 15px;
+  color: var(--text-gray);
+  font-size: 13px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #edf2f7;
+}
+
+.custom-table td {
+  padding: 18px 15px;
+  border-bottom: 1px solid #edf2f7;
+  font-size: 14px;
+}
+
+.status-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pill.pending { background: #fef9c3; color: #854d0e; }
+.status-pill.approved, .status-pill.active { background: #dcfce7; color: var(--success); }
+.status-pill.rejected { background: #fee2e2; color: #991b1b; }
+
+.audit-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.badge-cfo {
+  background: #2563eb;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* 8. BUTTONS & NOTIFICATIONS */
+.btn-action {
+  background: var(--primary-orange);
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: var(--white);
+  color: var(--text-dark);
+  border: 1px solid var(--border);
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.icon-btn-check { color: var(--success); background: none; border: none; cursor: pointer; transition: 0.2s; }
+.icon-btn-x { color: var(--danger); background: none; border: none; cursor: pointer; }
+.icon-btn-check:hover, .icon-btn-x:hover { transform: scale(1.2); }
+
+.error-msg {
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Top Bar Profile Enhancements */
+.profile-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  padding: 6px 14px;
+  border-radius: 30px;
+  border: 1px solid #e2e8f0;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.avatar-small {
+  width: 28px;
+  height: 28px;
+  background: #e2e8f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #64748b;
+}
+
+/* Ensure the main content area has smooth scrolling for long tables */
+.content-area {
+  padding: 40px;
+  height: calc(100vh - 65px);
+  overflow-y: auto;
+}
+
