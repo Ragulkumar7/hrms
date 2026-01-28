@@ -9,6 +9,8 @@ import Attendance from './components/Attendance';
 import ITOperations from './components/ITOperations';
 import Employees from './components/Employees';           // New Import
 import ManagerDashboard from './components/ManagerDashboard'; // New Import
+import TaskManagement from './components/TaskManagement';
+import Reports from './components/Reports';
 
 import { Bell, Search } from 'lucide-react';
 import './App.css';
@@ -101,6 +103,10 @@ function App() {
 
                 {/* 5. Attendance */}
                 <Route path="/attendance" element={<Attendance />} />
+
+                <Route path="/tasks" element={<TaskManagement />} />
+
+                <Route path="/reports" element={<Reports />} />
 
                 {/* --- FALLBACK --- */}
                 {/* The wildcard must always be LAST */}
