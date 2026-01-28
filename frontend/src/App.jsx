@@ -11,6 +11,9 @@ import Employees from './components/Employees';           // New Import
 import ManagerDashboard from './components/ManagerDashboard'; // New Import
 import TaskManagement from './components/TaskManagement';
 import Reports from './components/Reports';
+import Settings from './components/Settings';
+import Sales from './components/Sales';
+import Recruitment from './components/Recruitment';
 
 import { Bell, Search } from 'lucide-react';
 import './App.css';
@@ -107,6 +110,12 @@ function App() {
                 <Route path="/tasks" element={<TaskManagement />} />
 
                 <Route path="/reports" element={<Reports />} />
+
+                <Route path="/settings" element={<Settings />} />
+
+                <Route path="/sales" element={<Sales />} />
+
+                <Route path="/recruitment" element={<Recruitment />} />
 
                 {/* --- FALLBACK --- */}
                 {/* The wildcard must always be LAST */}
