@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { useUser } from '../context/UserContext'; 
 import { 
   Users, UserMinus, ArrowRightLeft, Lock, ChevronDown, ChevronRight, 
-  Gift, UserPlus, AlertTriangle, FileWarning, CheckCircle
+  Gift, UserPlus, AlertTriangle, FileWarning, CheckCircle, X
 } from 'lucide-react';
 
 const ManagerDashboard = () => {
   const { user } = useUser(); 
   
-  // 1. "New Emp Comes (HR)" - This simulates the pool of people HR added but aren't assigned yet
+  // 1. New Hires Pool (From HR)
   const [unassigned, setUnassigned] = useState([
     { id: 'EMP-NEW-1', name: 'Rohan (New)', role: 'Jr. Dev', joined: 'Yesterday' }
   ]);
 
-  // 2. Existing Teams
+  // 2. Existing Teams Data
   const [teamData, setTeamData] = useState([
     { 
       id: 'TL-01', name: 'Karthik (TL)', 
@@ -25,53 +25,77 @@ const ManagerDashboard = () => {
     { 
       id: 'TL-02', name: 'Sarah (TL)', 
       members: [
-        { id: 'E-103', name: 'Sanjay', role: 'DevOps', efficiency: 45, status: 'Active' } // Low efficiency
+        { id: 'E-103', name: 'Sanjay', role: 'DevOps', efficiency: 45, status: 'Active' }
       ]
     }
   ]);
 
-  // 3. "Automate Wishes" - Mock Data for upcoming events
+  // 3. Automated Wishes Data
   const upcomingEvents = [
     { id: 1, name: 'Varshith', type: 'Birthday', date: 'Today', status: 'Auto-Sent' },
     { id: 2, name: 'Sarah (TL)', type: 'Work Anniversary', date: 'Tomorrow', status: 'Scheduled' }
   ];
 
+  // State for UI
   const [expandedTL, setExpandedTL] = useState(null);
+  const [shuffleModal, setShuffleModal] = useState(null); // Stores the employee being shuffled
 
   // --- ACTIONS ---
 
-  // Assign New Hire to a TL
+  // 1. Assign New Hire to a TL
   const handleAssign = (empId, tlId) => {
     if (!tlId) return;
     const employee = unassigned.find(e => e.id === empId);
     
-    // Add to Team
     setTeamData(teamData.map(tl => {
       if (tl.id === tlId) {
         return { ...tl, members: [...tl.members, { ...employee, efficiency: 100, status: 'Active' }] };
       }
       return tl;
     }));
-
-    // Remove from Unassigned
     setUnassigned(unassigned.filter(e => e.id !== empId));
   };
 
-  // "Put Paper" Logic (Performance Low)
+  // 2. Put Paper Logic
   const handlePutPaper = (tlId, empId) => {
     if (window.confirm("Low Performance detected. Initiate 'Put Paper' (Notice Period) protocol?")) {
       setTeamData(teamData.map(tl => {
         if (tl.id === tlId) {
           return {
             ...tl,
-            members: tl.members.map(m => 
-              m.id === empId ? { ...m, status: 'Notice Period', efficiency: 0 } : m
-            )
+            members: tl.members.map(m => m.id === empId ? { ...m, status: 'Notice Period', efficiency: 0 } : m)
           };
         }
         return tl;
       }));
     }
+  };
+
+  // 3. SHUFFLE TEAM LOGIC (The Fix)
+  const executeShuffle = (newTlId) => {
+    if (!shuffleModal || !newTlId || newTlId === shuffleModal.currentTlId) return;
+
+    const { empId, currentTlId } = shuffleModal;
+
+    // A. Find the employee object
+    const sourceTL = teamData.find(t => t.id === currentTlId);
+    const employeeToMove = sourceTL.members.find(m => m.id === empId);
+
+    // B. Create new data structure
+    const updatedTeams = teamData.map(tl => {
+      // Remove from old TL
+      if (tl.id === currentTlId) {
+        return { ...tl, members: tl.members.filter(m => m.id !== empId) };
+      }
+      // Add to new TL
+      if (tl.id === newTlId) {
+        return { ...tl, members: [...tl.members, employeeToMove] };
+      }
+      return tl;
+    });
+
+    setTeamData(updatedTeams);
+    setShuffleModal(null); // Close Modal
   };
 
   // Filter View based on Role
@@ -88,7 +112,7 @@ const ManagerDashboard = () => {
         </div>
       </div>
 
-      {/* --- SECTION 1: AUTOMATED WISHES (From Note) --- */}
+      {/* AUTOMATED WISHES */}
       <div className="glass-card" style={{background: 'linear-gradient(to right, #fff, #fefce8)'}}>
         <div className="section-header" style={{border: 'none', marginBottom: '10px'}}>
           <h4 style={{color: '#d97706'}}><Gift size={18} /> Automated Wishes & Events</h4>
@@ -109,7 +133,7 @@ const ManagerDashboard = () => {
         </div>
       </div>
 
-      {/* --- SECTION 2: NEW HIRES (Unassigned Pool) --- */}
+      {/* NEW HIRES POOL */}
       {user.role === 'Manager' && unassigned.length > 0 && (
         <div className="glass-card" style={{border:'1px dashed #2563eb'}}>
           <div className="section-header">
@@ -139,7 +163,7 @@ const ManagerDashboard = () => {
         </div>
       )}
 
-      {/* --- SECTION 3: TEAM HIERARCHY & PERFORMANCE --- */}
+      {/* TEAM HIERARCHY */}
       <div className="glass-card">
         <div className="section-header">
           <h4><Users size={18} /> Team Structure & Efficiency</h4>
@@ -166,11 +190,9 @@ const ManagerDashboard = () => {
                 <tbody>
                   {tl.members.map(emp => (
                     <tr key={emp.id} style={{background: emp.status === 'Notice Period' ? '#fff1f2' : 'transparent'}}>
-                      <td>
-                        {emp.name}<br/><span style={{fontSize:'11px', color:'#888'}}>{emp.role}</span>
-                      </td>
+                      <td>{emp.name}<br/><span style={{fontSize:'11px', color:'#888'}}>{emp.role}</span></td>
                       
-                      {/* Efficiency Bar */}
+                      {/* Efficiency */}
                       <td>
                         <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
                            <div style={{width:'100px', height:'6px', background:'#eee', borderRadius:'4px'}}>
@@ -187,25 +209,26 @@ const ManagerDashboard = () => {
                         )}
                       </td>
 
-                      {/* Status */}
-                      <td>
-                        <span className={`status-pill ${emp.status === 'Active' ? 'active' : 'rejected'}`}>
-                          {emp.status}
-                        </span>
-                      </td>
+                      <td><span className={`status-pill ${emp.status === 'Active' ? 'active' : 'rejected'}`}>{emp.status}</span></td>
 
-                      {/* Actions: Shuffle & Put Paper */}
+                      {/* ACTIONS */}
                       <td>
                         {user.role === 'Manager' ? (
                           <div style={{display:'flex', gap:'10px'}}>
-                             <button className="icon-btn-check" title="Shuffle Team"><ArrowRightLeft size={16}/></button>
+                             {/* SHUFFLE BUTTON - Triggers Modal */}
+                             <button 
+                               className="icon-btn-check" 
+                               title="Shuffle Team"
+                               onClick={() => setShuffleModal({ empId: emp.id, currentTlId: tl.id, name: emp.name })}
+                             >
+                               <ArrowRightLeft size={16}/>
+                             </button>
                              
-                             {/* The "Put Paper" Button */}
+                             {/* PUT PAPER BUTTON */}
                              {emp.status === 'Active' && (
                                <button 
                                  className="icon-btn-x" 
                                  style={{color:'#dc2626', border:'1px solid #dc2626', padding:'4px 8px', borderRadius:'4px', display:'flex', gap:'5px', alignItems:'center'}}
-                                 title="Initiate Notice Period"
                                  onClick={() => handlePutPaper(tl.id, emp.id)}
                                >
                                  <FileWarning size={14}/> Put Paper
@@ -213,9 +236,7 @@ const ManagerDashboard = () => {
                              )}
                           </div>
                         ) : (
-                          <span style={{display:'flex', alignItems:'center', gap:'5px', color:'#94a3b8', fontSize:'12px'}}>
-                            <Lock size={12}/> Locked
-                          </span>
+                          <span style={{display:'flex', alignItems:'center', gap:'5px', color:'#94a3b8', fontSize:'12px'}}><Lock size={12}/> Locked</span>
                         )}
                       </td>
                     </tr>
@@ -226,6 +247,36 @@ const ManagerDashboard = () => {
           </div>
         ))}
       </div>
+
+      {/* --- SHUFFLE MODAL POPUP --- */}
+      {shuffleModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200
+        }}>
+          <div className="glass-card" style={{width:'350px', margin:0, padding:'20px'}}>
+             <div className="section-header">
+                <h4>Move {shuffleModal.name}?</h4>
+                <button className="icon-btn-x" onClick={() => setShuffleModal(null)}><X size={18}/></button>
+             </div>
+             <p style={{fontSize:'13px', color:'#666', marginBottom:'15px'}}>Select the new Team Lead for this employee.</p>
+             
+             <div style={{display:'flex', flexDirection:'column', gap:'10px'}}>
+                {teamData.filter(t => t.id !== shuffleModal.currentTlId).map(tl => (
+                  <button 
+                    key={tl.id} 
+                    className="btn-secondary"
+                    style={{justifyContent:'space-between'}}
+                    onClick={() => executeShuffle(tl.id)}
+                  >
+                    <span>{tl.name}</span>
+                    <ArrowRightLeft size={14}/>
+                  </button>
+                ))}
+             </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

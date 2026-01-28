@@ -1,34 +1,41 @@
 import React, { useState } from 'react';
+import { useUser } from '../context/UserContext'; // 1. Import Context
+import EmployeeAttendance from './EmployeeAttendance'; // 2. Import New Employee View
 import { 
-  CalendarCheck, Clock, UserX, AlertCircle, 
-  ChevronLeft, ChevronRight, Save, MapPin 
+  CalendarCheck, Clock, UserX, ChevronLeft, ChevronRight, Save, MapPin 
 } from 'lucide-react';
 
 const Attendance = () => {
+  const { user } = useUser(); // Get Current Role
+
+  // --- LOGIC: IF EMPLOYEE, SHOW NEW DASHBOARD ---
+  if (user.role === 'Employee') {
+    return <EmployeeAttendance />;
+  }
+
+  // --- LOGIC: IF MANAGER/TL, SHOW ADMIN VIEW (Your previous code) ---
+  // (I have kept your original Manager Logic below)
+  
   const [currentDate, setCurrentDate] = useState(new Date());
   
-  // Mock Data: In a real app, this loads based on the selected date
   const [attendance, setAttendance] = useState([
     { id: 'EMP001', name: 'Varshith', role: 'Sr. Developer', status: 'Present', checkIn: '09:30', checkOut: '18:30', leaveType: '' },
     { id: 'EMP002', name: 'Aditi Rao', role: 'UI/UX Designer', status: 'Leave', checkIn: '--:--', checkOut: '--:--', leaveType: 'Casual' },
     { id: 'EMP003', name: 'Sanjay Kumar', role: 'DevOps Engineer', status: 'Absent', checkIn: '--:--', checkOut: '--:--', leaveType: '' },
   ]);
 
-  // Handle Date Navigation
   const changeDate = (days) => {
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + days);
     setCurrentDate(newDate);
   };
 
-  // Handle Status Change
   const handleStatusChange = (id, newStatus) => {
     setAttendance(attendance.map(emp => {
       if (emp.id === id) {
         return { 
           ...emp, 
           status: newStatus,
-          // Reset times if Absent/Leave, set defaults if Present
           checkIn: newStatus === 'Present' ? '09:00' : '--:--',
           checkOut: newStatus === 'Present' ? '18:00' : '--:--',
           leaveType: newStatus === 'Leave' ? 'Casual' : '' 
@@ -38,14 +45,12 @@ const Attendance = () => {
     }));
   };
 
-  // Handle Leave Type Change
   const handleLeaveType = (id, type) => {
     setAttendance(attendance.map(emp => 
       emp.id === id ? { ...emp, leaveType: type } : emp
     ));
   };
 
-  // Statistics Calculation
   const stats = {
     present: attendance.filter(a => a.status === 'Present').length,
     leave: attendance.filter(a => a.status === 'Leave').length,
@@ -54,14 +59,13 @@ const Attendance = () => {
 
   return (
     <div>
-      {/* Header & Date Controls */}
+      {/* HEADER for Manager */}
       <div className="page-header">
         <div>
-          <h2 className="main-title">Daily Attendance</h2>
-          <p className="sub-title">Track Check-ins, Absentees, and Leaves</p>
+          <h2 className="main-title">Daily Attendance Log</h2>
+          <p className="sub-title">Track Team Check-ins and Leaves</p>
         </div>
         
-        {/* Date Navigator */}
         <div className="glass-card" style={{margin:0, padding:'8px 16px', display:'flex', alignItems:'center', gap:'15px'}}>
           <button className="icon-btn-check" onClick={() => changeDate(-1)}><ChevronLeft size={20}/></button>
           <div style={{textAlign:'center'}}>
@@ -76,7 +80,6 @@ const Attendance = () => {
         </div>
       </div>
 
-      {/* Daily Stats */}
       <div className="stats-grid">
         <div className="glass-card stat-item">
           <div className="icon-box green"><CalendarCheck size={20} /></div>
@@ -92,7 +95,6 @@ const Attendance = () => {
         </div>
       </div>
 
-      {/* Attendance Table */}
       <div className="glass-card">
         <div className="section-header">
           <h4><Clock size={18} /> Employee Log</h4>
@@ -120,7 +122,6 @@ const Attendance = () => {
                   <div style={{fontSize:'11px', color:'#94a3b8'}}>{emp.role}</div>
                 </td>
                 
-                {/* Status Toggles */}
                 <td>
                   <div style={{display:'flex', gap:'5px', background:'#f1f5f9', padding:'4px', borderRadius:'8px', width:'fit-content'}}>
                     {['Present', 'Leave', 'Absent'].map(status => (
@@ -146,7 +147,6 @@ const Attendance = () => {
                   </div>
                 </td>
 
-                {/* Time Inputs */}
                 <td>
                   <input type="time" disabled={emp.status !== 'Present'} 
                     value={emp.checkIn} className="admin-input small" style={{width:'85px'}} />
@@ -156,7 +156,6 @@ const Attendance = () => {
                     value={emp.checkOut} className="admin-input small" style={{width:'85px'}} />
                 </td>
 
-                {/* Dynamic Logic: If Leave -> Show Dropdown, Else Show "-" */}
                 <td>
                   {emp.status === 'Leave' ? (
                     <select 
