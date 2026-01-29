@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import {
   Users, UserPlus, FileSearch, Megaphone,
-  Calendar, Upload, Search, MoreVertical, Plus,
+  Calendar, Upload, Search, Plus,
   X, Eye, Edit, Trash2
 } from 'lucide-react';
 
@@ -12,65 +12,131 @@ const HRManagement = () => {
   const tabs = [
     { id: 'directory', label: 'Employee Directory', icon: <Users size={18} /> },
     { id: 'hiring', label: 'Hiring & ATS', icon: <UserPlus size={18} /> },
-    { id: 'attendance', label: 'Attendance Maintanance', icon: <Calendar size={18} /> },
+    { id: 'attendance', label: 'Attendance Maintenance', icon: <Calendar size={18} /> },
     { id: 'announcements', label: 'Announcements', icon: <Megaphone size={18} /> },
   ];
 
   const hrStyles = `
     .animate-in { animation: fadeIn 0.6s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-    .light-premium { background: linear-gradient(to bottom, #f9f7ff 0%, #f3efff 100%); min-height: 100vh; color: #1e293b; font-family: 'Inter', system-ui, sans-serif; }
-    .glass-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.12); }
-    .tab-container { background: white; border-bottom: 1px solid rgba(139,92,246,0.15); border-radius: 12px 12px 0 0; padding: 8px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); overflow-x: auto; white-space: nowrap; }
-    .tab-btn { color: #64748b; font-weight: 600; padding: 10px 18px; border-radius: 10px; transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 8px; }
-    .tab-btn:hover { color: #7c3aed; background: rgba(139,92,246,0.07); }
-    .tab-btn.active { color: #7c3aed; background: rgba(139,92,246,0.15); font-weight: 700;position: relative;}
-    .tab-btn.active::after {content: position: absolute;bottom: 0;left: 0;width: 100%;height: 3px;background: transparent;   /* no visible line */}
-
-    .btn-action { background: #632881ff; color: white; padding: 10px 20px; border-radius: 10px; font-weight: 600; border: none; transition: all 0.2s; white-space: nowrap; }
-    .btn-action:hover { background: #462f55ff; transform: translateY(-1px); }
-
-    .admin-input { background: white; border: 1px solid #d1d5db; color: #1f2937; padding: 10px 14px; border-radius: 10px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.04); transition: all 0.2s; width: 100%; box-sizing: border-box; }
-    .admin-input:focus { border-color: #c084fc; box-shadow: 0 0 0 3px rgba(192,132,252,0.15); outline: none; }
-
-    .custom-table { width: 100%; border-collapse: collapse; min-width: 900px; }
-    .custom-table th { color: #475569; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; padding: 14px 12px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; text-align: left; white-space: nowrap; }
-    .custom-table td { color: #1e293b; padding: 14px 12px; border-bottom: 1px solid #f3f4f6; white-space: nowrap; }
-    .custom-table tr:hover { background: #f9fafb; }
-
-    .status-pill { padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-    .approved  { background: #ecfdf5; color: #065f46; }
-    .pending   { background: #fff7ed; color: #c2410c; }
-    .rejected  { background: #fef2f2; color: #991b1b; }
-
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-    .modal-content { background: white; border-radius: 16px; width: 90%; max-width: 680px; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 1px solid rgba(139,92,246,0.15); z-index: 10000; }
-    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 24px; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group label { font-size: 12px; color: #475569; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .close-btn { background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 24px; transition: color 0.2s; }
-    .close-btn:hover { color: #f97316; }
-
-    .action-btn { background: none; border: none; cursor: pointer; color: #64748b; padding: 6px; border-radius: 6px; transition: all 0.2s; }
-    .action-btn:hover { background: rgba(139,92,246,0.1); color: #7c3aed; }
-
-    @media (max-width: 1024px) {
-      .tab-container { overflow-x: auto; white-space: nowrap; padding-bottom: 12px; }
-      .tab-btn { padding: 8px 14px; font-size: 13px; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
+
+    .light-premium {
+      background: linear-gradient(to bottom, #f9f7ff 0%, #f3efff 100%);
+      min-height: 100vh;
+      color: #1e293b;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .glass-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.12);
+    }
+
+    .tab-container {
+      background: white;
+      border-bottom: 1px solid rgba(139,92,246,0.15);
+      padding: 8px 12px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      color: #64748b;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn.active {
+      color: #7c3aed;
+      background: rgba(139,92,246,0.15);
+    }
+
+    .btn-action {
+      background: #632881;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+
+    .admin-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    .custom-table th, .custom-table td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    .status-pill {
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .approved { background: #ecfdf5; color: #065f46; }
+    .pending { background: #fff7ed; color: #c2410c; }
+    .rejected { background: #fef2f2; color: #991b1b; }
+
+    /* ⭐ FIX 1: NO BLUR */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 999;
+    }
+
+    /* ⭐ FIX 2: MODAL ALWAYS ABOVE */
+    .modal-content {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      z-index: 1000;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px 24px;
+    }
+
     @media (max-width: 768px) {
-      .page-header { flex-direction: column; align-items: flex-start; gap: 16px; }
-      .custom-table th, .custom-table td { padding: 10px 8px; font-size: 13px; }
-      .glass-card { padding: 16px; }
-      .btn-action { padding: 10px 16px; font-size: 14px; }
-      .form-grid { grid-template-columns: 1fr; gap: 16px; }
-      .modal-content { padding: 20px; }
-    }
-    @media (max-width: 480px) {
-      h1 { font-size: 24px; }
-      .modal-content { padding: 16px; }
+      .form-grid { grid-template-columns: 1fr; }
     }
   `;
 
@@ -78,21 +144,14 @@ const HRManagement = () => {
     <div className="light-premium animate-in">
       <style>{hrStyles}</style>
 
-      <div className="page-header" style={{ marginBottom: '28px' }}>
-        <div>
-          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b' }}>HR Management</h1>
-          <p style={{ color: '#64748b', marginTop: '6px' }}>
-            Manage your workforce, hiring, and internal communications.
-          </p>
-        </div>
-      </div>
+      <h1 style={{ fontSize: 28, fontWeight: 700 }}>HR Management</h1>
 
       <div className="tab-container">
-        {tabs.map((tab) => (
+        {tabs.map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
             className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab.id)}
           >
             {tab.icon} {tab.label}
           </button>
@@ -100,7 +159,9 @@ const HRManagement = () => {
       </div>
 
       <div className="glass-card">
-        {activeTab === 'directory' && <EmployeeDirectory setShowAddEmployeeModal={setShowAddEmployeeModal} />}
+        {activeTab === 'directory' && (
+          <EmployeeDirectory setShowAddEmployeeModal={setShowAddEmployeeModal} />
+        )}
         {activeTab === 'hiring' && <HiringATS />}
         {activeTab === 'attendance' && <AttendanceMaint />}
         {activeTab === 'announcements' && <AnnouncementsPortal />}
@@ -108,95 +169,119 @@ const HRManagement = () => {
 
       {showAddEmployeeModal && (
         <>
-          <div className="modal-overlay" onClick={() => setShowAddEmployeeModal(false)} />
+          <div
+            className="modal-overlay"
+            onClick={() => setShowAddEmployeeModal(false)}
+          />
+
           <div className="modal-content">
-            <div className="modal-header">
-              <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#1e293b' }}>Add New Employee</h2>
-              <button 
-                onClick={() => setShowAddEmployeeModal(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af' }}
-              >
-                <X size={24} />
+            <h2>Add New Employee</h2>
+
+            <div className="form-grid">
+
+  {/* Employee ID */}
+  <div className="form-group">
+    <label>EMPLOYEE ID</label>
+    <input
+      type="text"
+      className="admin-input"
+      placeholder="EMP001"
+      required
+    />
+  </div>
+
+  {/* Full Name */}
+  <div className="form-group">
+    <label>FULL NAME</label>
+    <input
+      type="text"
+      className="admin-input"
+      placeholder="Enter full name"
+      required
+    />
+  </div>
+
+  {/* Email ID */}
+  <div className="form-group">
+    <label>EMAIL ID</label>
+    <input
+      type="email"
+      className="admin-input"
+      placeholder="employee@company.com"
+      required
+    />
+  </div>
+
+  {/* Role – IT Sector */}
+  <div className="form-group">
+    <label>ROLE</label>
+    <select className="admin-input" required>
+      <option value="">Select Role</option>
+      <option>Software Developer</option>
+      <option>Frontend Developer</option>
+      <option>Backend Developer</option>
+      <option>Full Stack Developer</option>
+      <option>QA / Tester</option>
+      <option>DevOps Engineer</option>
+      <option>UI / UX Designer</option>
+      <option>HR</option>
+      <option>System Admin</option>
+    </select>
+  </div>
+
+  {/* Designation */}
+  <div className="form-group">
+    <label>DESIGNATION</label>
+    <select className="admin-input" required>
+      <option value="">Select Designation</option>
+      <option>Employee</option>
+      <option>Team Lead (TL)</option>
+      <option>Manager</option>
+      <option>Accounts</option>
+      <option>Sales</option>
+    </select>
+  </div>
+
+  {/* Department */}
+  <div className="form-group">
+    <label>DEPARTMENT</label>
+    <select className="admin-input" required>
+      <option value="">Select Department</option>
+      <option>Engineering</option>
+      <option>IT Support</option>
+      <option>HR</option>
+      <option>Finance</option>
+      <option>Sales</option>
+      <option>Operations</option>
+    </select>
+  </div>
+
+  {/* Joining Date */}
+  <div className="form-group">
+    <label>JOINING DATE</label>
+    <input type="date" className="admin-input" required />
+  </div>
+
+  {/* Salary */}
+  <div className="form-group">
+    <label>SALARY (₹)</label>
+    <input
+      type="number"
+      className="admin-input"
+      placeholder="Enter monthly salary"
+      min="0"
+      required
+    />
+  </div>
+
+</div>
+
+
+            <div style={{ marginTop: 24, textAlign: 'right' }}>
+              <button className="btn-action" onClick={() => setShowAddEmployeeModal(false)}>
+                Save Employee
               </button>
             </div>
-
-            <form>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>FULL NAME</label>
-                  <input type="text" className="admin-input" placeholder="Enter full name" required />
-                </div>
-                <div className="form-group">
-                  <label>EMAIL ADDRESS</label>
-                  <input type="email" className="admin-input" placeholder="employee@company.com" required />
-                </div>
-                <div className="form-group">
-                  <label>ROLE</label>
-                  <select className="admin-input" required>
-                    <option value="">Select Role</option>
-                    <option>Employee</option>
-                    <option>TL (Team Lead)</option>
-                    <option>Manager</option>
-                    <option>HR</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>DESIGNATION</label>
-                  <input type="text" className="admin-input" placeholder="e.g. Senior Developer" required />
-                </div>
-                <div className="form-group">
-                  <label>DEPARTMENT</label>
-                  <select className="admin-input" required>
-                    <option value="">Select Department</option>
-                    <option>Engineering</option>
-                    <option>Design</option>
-                    <option>Product</option>
-                    <option>Marketing</option>
-                    <option>Finance</option>
-                    <option>HR</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>JOINING DATE</label>
-                  <input type="date" className="admin-input" required />
-                </div>
-                <div className="form-group">
-                  <label>BASIC PAY (₹)</label>
-                  <input type="number" className="admin-input" placeholder="Enter basic salary" min="0" required />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '32px', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  onClick={() => setShowAddEmployeeModal(false)}
-                  style={{
-                    padding: '10px 28px',
-                    background: '#f3f4f6',
-                    color: '#4b5563',
-                    borderRadius: '10px',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontWeight: '500',
-                    flex: '1 1 auto',
-                    minWidth: '120px'
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn-action"
-                  style={{ padding: '10px 32px', flex: '1 1 auto', minWidth: '140px' }}
-                  onClick={() => {
-                    alert('New employee added! (Connect your backend / state logic here)');
-                    setShowAddEmployeeModal(false);
-                  }}
-                >
-                  Add Employee
-                </button>
-              </div>
-            </form>
           </div>
         </>
       )}
