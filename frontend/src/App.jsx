@@ -5,18 +5,19 @@ import { UserProvider, useUser } from './context/UserContext';
 // --- COMPONENT IMPORTS ---
 import Sidebar from './components/Sidebar';
 import Accounts from './components/Accounts';
+import AdminDashboard from './components/AdminDashboard';
 import Attendance from './components/Attendance';
 import ITOperations from './components/ITOperations';
 import Employees from './components/Employees';
 import ManagerDashboard from './components/ManagerDashboard';
-import EmployeeDashboard from './components/EmployeeDashboard'; // <--- 1. NEW IMPORT
+import EmployeeDashboard from './components/EmployeeDashboard';
 import TaskManagement from './components/TaskManagement';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
 import Sales from './components/Sales';
 import Recruitment from './components/Recruitment';
 import HRManagement from './components/hrManagement';
-import TeamLeadDashboard from './components/TeamLead'; // Adjust path as needed
+import TeamLeadDashboard from './components/TeamLead'; 
 
 import { Bell, Search } from 'lucide-react';
 import './App.css';
@@ -56,25 +57,22 @@ const RoleSwitcher = () => {
 };
 
 // --- SMART DASHBOARD LOGIC ---
-// 2. This decides which Dashboard to show based on role
-// --- SMART DASHBOARD LOGIC ---
 const DashboardHome = () => {
   const { user } = useUser();
 
-  if (user.role === 'Employee') return <EmployeeDashboard />;
+  // 1. Employee View
+  if (user.role === 'Employee') {
+    return <EmployeeDashboard />;
+  }
   
-  // ADD THIS: If TL, show Team Lead Dashboard as home
-  if (user.role === 'TL') return <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />;
+  // 2. Team Lead View
+  if (user.role === 'TL') {
+    // Passing empty props for now to prevent crash if state isn't lifted yet
+    return <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />;
+  }
 
-  return (
-    <div className="glass-card">
-      <h3 className="main-title">Admin Dashboard Overview</h3>
-      <p className="sub-title" style={{ marginTop: '10px' }}>
-        Welcome to the Core HRMS Enterprise Portal. 
-        Use the sidebar to navigate based on your role.
-      </p>
-    </div>
-  );
+  // 3. Manager/Admin View (Default)
+  return <AdminDashboard />;
 };
 
 function App() {
@@ -88,31 +86,32 @@ function App() {
           <main className="main-content">
             {/* Top Navigation Bar */}
             <header className="top-bar">
-  {/* Left Section: Styled Search Bar */}
-  <div className="search-container">
-    <div className="search-box">
-      <Search size={16} className="search-icon" />
-      <input type="text" placeholder="Search operations..." />
-    </div>
-  </div>
+              {/* Left Section: Search */}
+              <div className="search-container">
+                <div className="search-box">
+                  <Search size={16} className="search-icon" />
+                  <input type="text" placeholder="Search operations..." />
+                </div>
+              </div>
 
-  {/* Right Section: Notification and Profile */}
-  <div className="user-nav">
-    <div className="icon-btn-wrapper">
-      <Bell size={20} className="notification-icon" />
-      <span className="notification-dot"></span>
-    </div>
-    <HeaderProfile />
-  </div>
-</header>
+              {/* Right Section: Notification and Profile */}
+              <div className="user-nav">
+                <div className="icon-btn-wrapper">
+                  <Bell size={20} className="notification-icon" />
+                  <span className="notification-dot"></span>
+                </div>
+                <HeaderProfile />
+              </div>
+            </header>
 
             <div className="content-area">
               <Routes>
                 
-                {/* 3. Use the Smart Wrapper for the Home Route */}
+                {/* Home Route (Smart Dashboard) */}
                 <Route path="/" element={<DashboardHome />} />
+                
+                {/* Specific Module Routes */}
                 <Route path="/hrManagement" element={<HRManagement />} />
-                {/* --- MODULES --- */}
                 <Route path="/employees" element={<Employees />} />
                 <Route path="/manager" element={<ManagerDashboard />} />
                 <Route path="/payroll" element={<Accounts />} />
@@ -123,14 +122,17 @@ function App() {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/recruitment" element={<Recruitment />} />
+                
+                {/* Direct Link to Team Lead Dashboard */}
                 <Route path="/TeamLead" element={<TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />} />
+                
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
             </div>
           </main>
 
-          {/* Role Switcher */}
+          {/* Role Switcher for Development */}
           <RoleSwitcher />
         </div>
       </Router>
