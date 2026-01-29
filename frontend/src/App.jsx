@@ -24,6 +24,7 @@ import Recruitment from "./components/Recruitment";
 import HRManagement from "./components/hrManagement";
 import TeamLeadDashboard from "./components/TeamLead";
 import SelfAssignedTask from "./components/SelfAssignedTask"; 
+import Logout from './components/Logout';
 
 import { Bell, Search, ChevronDown } from "lucide-react"; // Added ChevronDown for premium feel
 import "./App.css";
@@ -263,6 +264,7 @@ function App() {
                 <Route path="/recruitment" element={<Recruitment />} />
                 <Route path="/TeamLead" element={<TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />} />
                 <Route path="*" element={<Navigate to="/" />} />
+                <Route path="/logout" element={<Logout />} />
               </Routes>
             </div>
           </main>
