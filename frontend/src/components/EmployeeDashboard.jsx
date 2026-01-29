@@ -20,6 +20,8 @@ import {
   FileText,
   DownloadCloud,
   User,
+  ChevronDown,
+  Info,
 } from "lucide-react";
 
 const EmployeeDashboard = () => {
@@ -51,6 +53,14 @@ const EmployeeDashboard = () => {
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [supportType, setSupportType] = useState("");
+  const [supportReason, setSupportReason] = useState("");
+
+  // --- NEW: Custom Message Popup State ---
+  const [msgModal, setMsgModal] = useState({ isOpen: false, text: "" });
+
+  const triggerPopup = (text) => {
+    setMsgModal({ isOpen: true, text });
+  };
 
   // --- MOCK DATA ---
   const empDetails = {
@@ -75,7 +85,7 @@ const EmployeeDashboard = () => {
 
   // --- HANDLERS ---
   const handleOpenFile = (fileName) => {
-    alert(`Opening ${fileName}...`);
+    triggerPopup(`Action: Accessing ${fileName}`);
   };
 
   const handleTaskAction = (id, newStatus) => {
@@ -97,13 +107,14 @@ const EmployeeDashboard = () => {
           t.id === activeTaskId ? { ...t, status: "Completed" } : t,
         ),
       );
-      alert(`✅ File Attached: ${file.name}`);
+      triggerPopup(`✅ File Attached: ${file.name}`);
       setActiveTaskId(null);
     }
   };
 
   const openSupportModal = (type) => {
     setSupportType(type);
+    setSupportReason("");
     setShowSupportModal(true);
   };
 
@@ -153,6 +164,18 @@ const EmployeeDashboard = () => {
             margin-bottom: 15px;
             flex-wrap: wrap;
             gap: 10px;
+          }
+
+          .reason-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            appearance: none;
+            background-color: white;
+            cursor: pointer;
           }
 
           @media (max-width: 480px) {
@@ -222,13 +245,13 @@ const EmployeeDashboard = () => {
         </div>
       )}
 
-      {/* GRID 1: Profile, Check-In, Attendance Overview */}
+      {/* GRID 1 */}
       <div className="dashboard-grid">
         {/* Profile Card */}
         <div
           style={{
             ...cardStyle,
-            background: "linear-gradient(135deg, #1e1b4b, #312e81)",
+            background: "linear-gradient(135deg, #4C1D95, #4C1D95)",
             color: "white",
           }}
         >
@@ -298,11 +321,10 @@ const EmployeeDashboard = () => {
               </div>
             </div>
           </div>
-
           <div
             style={{
               flex: 1,
-              background: "rgba(0,0,0,0.2)",
+              background: "rgba(69, 33, 176, 0.68)",
               borderRadius: "8px",
               padding: "12px",
             }}
@@ -334,7 +356,7 @@ const EmployeeDashboard = () => {
                       fontSize: "12px",
                       cursor: "pointer",
                       padding: "4px 0",
-                      borderBottom: "1px solid rgba(255,255,255,0.05)",
+                      borderBottom: "1px solid rgba(127, 31, 201, 0.74)",
                     }}
                   >
                     <span
@@ -507,7 +529,7 @@ const EmployeeDashboard = () => {
                   justifyContent: "center",
                   fontSize: "14px",
                   fontWeight: "bold",
-                  color: "#1e293b",
+                  color: "#4C1D95",
                 }}
               >
                 Active
@@ -532,12 +554,11 @@ const EmployeeDashboard = () => {
         </div>
       </div>
 
-      {/* GRID 2: Distribution, Tasks, Announcements, Support */}
+      {/* GRID 2 */}
       <div className="dashboard-grid">
-        {/* Leave Distribution Card */}
         <div style={cardStyle}>
           <h3
-            style={{ margin: "0 0 20px 0", fontSize: "18px", color: "#1e293b" }}
+            style={{ margin: "0 0 20px 0", fontSize: "18px", color: "#4C1D95" }}
           >
             Leave Distribution
           </h3>
@@ -576,7 +597,7 @@ const EmployeeDashboard = () => {
                   style={{
                     width: "12px",
                     height: "12px",
-                    background: "#3b82f6",
+                    background: "#4C1D95",
                     borderRadius: "2px",
                   }}
                 ></div>
@@ -585,7 +606,7 @@ const EmployeeDashboard = () => {
                 >
                   Casual:
                 </span>
-                <span style={{ fontWeight: "bold", color: "#1e293b" }}>4</span>
+                <span style={{ fontWeight: "bold", color: "#4C1D95" }}>4</span>
               </div>
               <div
                 style={{ display: "flex", alignItems: "center", gap: "10px" }}
@@ -603,7 +624,7 @@ const EmployeeDashboard = () => {
                 >
                   Sick:
                 </span>
-                <span style={{ fontWeight: "bold", color: "#1e293b" }}>3</span>
+                <span style={{ fontWeight: "bold", color: "#4C1D95" }}>3</span>
               </div>
               <div
                 style={{ display: "flex", alignItems: "center", gap: "10px" }}
@@ -621,7 +642,7 @@ const EmployeeDashboard = () => {
                 >
                   Earned:
                 </span>
-                <span style={{ fontWeight: "bold", color: "#1e293b" }}>3</span>
+                <span style={{ fontWeight: "bold", color: "#4C1D95" }}>3</span>
               </div>
               <div
                 style={{
@@ -638,7 +659,6 @@ const EmployeeDashboard = () => {
           </div>
         </div>
 
-        {/* Task Manager List */}
         <div style={cardStyle}>
           <h3 style={{ margin: "0 0 10px 0", fontSize: "18px" }}>
             Task Manager
@@ -675,7 +695,7 @@ const EmployeeDashboard = () => {
                       padding: "6px 12px",
                       fontSize: "11px",
                       background:
-                        t.status === "Completed" ? "#10b981" : "#1e1b4b",
+                        t.status === "Completed" ? "#10b981" : "#4C1D95",
                       color: "white",
                       border: "none",
                       borderRadius: "4px",
@@ -689,7 +709,6 @@ const EmployeeDashboard = () => {
           </div>
         </div>
 
-        {/* Announcements */}
         <div style={cardStyle}>
           <h3 style={{ margin: "0 0 15px 0", fontSize: "18px" }}>
             Announcements
@@ -719,7 +738,7 @@ const EmployeeDashboard = () => {
           </div>
         </div>
 
-        {/* Support Card */}
+        {/* Help & Support Card - Removed Substitution Request Button */}
         <div style={cardStyle}>
           <h3 style={{ margin: "0 0 15px 0", fontSize: "18px" }}>
             Help & Support
@@ -747,9 +766,49 @@ const EmployeeDashboard = () => {
             >
               Raise Tech Ticket
             </button>
-            <button
-              onClick={() => openSupportModal("Substitution Request")}
+          </div>
+        </div>
+      </div>
+
+      {/* --- MODALS SECTION --- */}
+
+      {/* Custom Message Modal */}
+      {msgModal.isOpen && (
+        <div style={modalOverlayStyle}>
+          <div
+            className="modal-content"
+            style={{
+              background: "white",
+              padding: "30px",
+              borderRadius: "15px",
+              width: "400px",
+              textAlign: "center",
+              boxShadow: "0 20px 25px rgba(0,0,0,0.1)",
+            }}
+          >
+            <Info size={40} color="#4C1D95" style={{ marginBottom: "15px" }} />
+            <h2
               style={{
+                fontSize: "20px",
+                marginBottom: "10px",
+                color: "#4C1D95",
+              }}
+            >
+              System Message
+            </h2>
+            <p
+              style={{
+                fontSize: "15px",
+                color: "#475569",
+                marginBottom: "20px",
+              }}
+            >
+              {msgModal.text}
+            </p>
+            <button
+              onClick={() => setMsgModal({ isOpen: false, text: "" })}
+              style={{
+                width: "100%",
                 padding: "12px",
                 background: "#4C1D95",
                 color: "white",
@@ -759,13 +818,11 @@ const EmployeeDashboard = () => {
                 fontWeight: "bold",
               }}
             >
-              Substitution Request
+              Okay
             </button>
           </div>
         </div>
-      </div>
-
-      {/* --- MODALS SECTION --- */}
+      )}
 
       {/* Support Message Modal */}
       {showSupportModal && (
@@ -778,6 +835,7 @@ const EmployeeDashboard = () => {
               borderRadius: "15px",
               width: "450px",
               boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
+              position: "relative",
             }}
           >
             <div
@@ -792,6 +850,48 @@ const EmployeeDashboard = () => {
               <MessageSquare size={24} />
               <h2 style={{ margin: 0, fontSize: "20px" }}>{supportType}</h2>
             </div>
+            {supportType === "Tech Ticket" && (
+              <div style={{ position: "relative" }}>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#64748b",
+                    marginBottom: "5px",
+                  }}
+                >
+                  Select the issue reason:
+                </p>
+                <select
+                  className="reason-select"
+                  value={supportReason}
+                  onChange={(e) => setSupportReason(e.target.value)}
+                >
+                  <option value="" disabled>
+                    -- Select a Reason --
+                  </option>
+                  <option value="Hardware Issue">
+                    Hardware Issue (Laptop/Mouse/etc)
+                  </option>
+                  <option value="Software Access">
+                    Software / Access Issue
+                  </option>
+                  <option value="Network Connectivity">
+                    Network / Internet Problem
+                  </option>
+                  <option value="Others">Others</option>
+                </select>
+                <ChevronDown
+                  size={18}
+                  style={{
+                    position: "absolute",
+                    right: "12px",
+                    top: "40px",
+                    pointerEvents: "none",
+                    color: "#94a3b8",
+                  }}
+                />
+              </div>
+            )}
             <p
               style={{
                 fontSize: "14px",
@@ -799,7 +899,7 @@ const EmployeeDashboard = () => {
                 marginBottom: "10px",
               }}
             >
-              Details regarding your {supportType.toLowerCase()}:
+              Details regarding your request:
             </p>
             <textarea
               placeholder="Type your details here..."
@@ -832,8 +932,8 @@ const EmployeeDashboard = () => {
               </button>
               <button
                 onClick={() => {
-                  alert("Submitted Successfully!");
                   setShowSupportModal(false);
+                  triggerPopup("Your request has been submitted successfully!");
                 }}
                 style={{
                   flex: 1,
@@ -892,7 +992,10 @@ const EmployeeDashboard = () => {
                 Cancel
               </button>
               <button
-                onClick={() => setShowLeaveModal(false)}
+                onClick={() => {
+                  setShowLeaveModal(false);
+                  triggerPopup("Leave request sent for approval.");
+                }}
                 style={{
                   flex: 1,
                   padding: "12px",
