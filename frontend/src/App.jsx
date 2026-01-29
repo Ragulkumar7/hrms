@@ -5,6 +5,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
+// --- FIX: Correct Import Path (Use ./ instead of ../) ---
 import { UserProvider, useUser } from "./context/UserContext";
 
 // --- COMPONENT IMPORTS ---
@@ -26,10 +28,10 @@ import TeamLeadDashboard from "./components/TeamLead";
 import SelfAssignedTask from "./components/SelfAssignedTask"; 
 import Logout from './components/Logout';
 
-import { Bell, Search, ChevronDown } from "lucide-react"; // Added ChevronDown for premium feel
+import { Bell, Search, ChevronDown } from "lucide-react"; 
 import "./App.css";
 
-// --- HEADER PROFILE (Updated Structure) ---
+// --- HEADER PROFILE ---
 const HeaderProfile = () => {
   const { user } = useUser();
   return (
@@ -46,7 +48,7 @@ const HeaderProfile = () => {
   );
 };
 
-// --- ROLE SWITCHER ---
+// --- ROLE SWITCHER (Accounts Added) ---
 const RoleSwitcher = () => {
   const { user, login } = useUser();
   return (
@@ -60,8 +62,9 @@ const RoleSwitcher = () => {
       <p style={{ fontSize: "10px", fontWeight: "800", marginBottom: "8px", color: "#6D28D9", textTransform: "uppercase" }}>
         Current: {user.role}
       </p>
-      <div style={{ display: "flex", gap: "6px" }}>
-        {['Manager', 'TL', 'Employee'].map((role) => (
+      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+        {/* ADDED 'Accounts' TO THIS LIST */}
+        {['Manager', 'HR', 'Accounts', 'TL', 'Employee'].map((role) => (
           <button
             key={role}
             onClick={() => login(role === 'TL' ? 'TL' : role, role === 'TL' ? 'TL-01' : undefined)}
@@ -79,10 +82,16 @@ const RoleSwitcher = () => {
   );
 };
 
+// --- SMART DASHBOARD LOGIC (Accounts Added) ---
 const DashboardHome = () => {
   const { user } = useUser();
+  
   if (user.role === "Employee") return <EmployeeDashboard />;
   if (user.role === "TL") return <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />;
+  
+  // HR and Accounts see the main Admin Dashboard
+  if (user.role === "HR" || user.role === "Accounts") return <AdminDashboard />;
+  
   return <AdminDashboard />;
 };
 
@@ -107,7 +116,6 @@ function App() {
                 /* Layout */
                 .top-bar {
                   height: var(--header-height);
-                  /* Premium Gradient Fade */
                   background: linear-gradient(to bottom, #ffffff, #fafafa);
                   display: flex;
                   align-items: center;
@@ -119,125 +127,81 @@ function App() {
                   border-bottom: 1px solid #F3F4F6;
                 }
 
-                /* --- 1. SEARCH BOX FIX --- */
+                /* Search Box */
                 .search-container { flex: 1; }
-                
-                .search-wrapper {
-                  position: relative;
-                  width: 380px;
-                }
-
+                .search-wrapper { position: relative; width: 380px; }
                 .search-box {
-                  display: flex;
-                  align-items: center; /* Crucial for vertical center */
-                  height: 46px;        /* Fixed height prevents jumping */
-                  background: #ffffff;
-                  border: 1px solid #E5E7EB;
-                  border-radius: 12px;
-                  padding: 0 16px;
-                  box-shadow: 0 4px 12px rgba(0,0,0,0.02); /* Soft shadow */
-                  transition: all 0.3s ease;
-                  gap: 12px;
+                  display: flex; align-items: center; height: 46px;
+                  background: #ffffff; border: 1px solid #E5E7EB;
+                  border-radius: 12px; padding: 0 16px;
+                  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+                  transition: all 0.3s ease; gap: 12px;
                 }
-
-                /* Hover/Focus State */
                 .search-box:focus-within {
                   border-color: var(--accent-purple);
-                  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.15); /* Purple Glow */
+                  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.15);
                   transform: translateY(-1px);
                 }
-
-                .search-icon {
-                  color: #9CA3AF;
-                  min-width: 20px;
-                }
+                .search-icon { color: #9CA3AF; min-width: 20px; }
                 .search-box:focus-within .search-icon { color: var(--accent-purple); }
-
                 .search-box input {
-                  border: none;
-                  background: transparent;
-                  outline: none;
-                  font-size: 14px;
-                  color: #1F2937;
-                  font-weight: 500;
-                  width: 100%;
-                  height: 100%; /* Fills the flex container */
-                  padding: 0;
-                  margin: 0;
+                  border: none; background: transparent; outline: none;
+                  font-size: 14px; color: #1F2937; font-weight: 500;
+                  width: 100%; height: 100%; padding: 0; margin: 0;
                 }
                 .search-box input::placeholder { color: #9CA3AF; font-weight: 400; }
 
-                /* --- 2. PROFILE & ICONS FIX --- */
+                /* User Nav */
                 .user-nav { display: flex; align-items: center; gap: 24px; }
-
-                /* Notification Bell */
                 .notif-btn {
-                  position: relative;
-                  width: 44px; height: 44px;
-                  border-radius: 12px;
-                  background: #ffffff;
-                  border: 1px solid #F3F4F6;
+                  position: relative; width: 44px; height: 44px;
+                  border-radius: 12px; background: #ffffff; border: 1px solid #F3F4F6;
                   display: flex; align-items: center; justify-content: center;
-                  color: #6B7280;
-                  cursor: pointer;
-                  transition: all 0.2s;
+                  color: #6B7280; cursor: pointer; transition: all 0.2s;
                 }
                 .notif-btn:hover {
-                  background: #F5F3FF;
-                  color: var(--accent-purple);
-                  border-color: #DDD6FE;
+                  background: #F5F3FF; color: var(--accent-purple); border-color: #DDD6FE;
                 }
                 .dot {
                   position: absolute; top: 11px; right: 12px;
-                  width: 8px; height: 8px;
-                  background: #EF4444; border: 2px solid #fff; border-radius: 50%;
+                  width: 8px; height: 8px; background: #EF4444; border: 2px solid #fff; border-radius: 50%;
                 }
 
                 /* Profile Pill */
                 .profile-pill {
                   display: flex; align-items: center; gap: 12px;
-                  padding: 6px 8px 6px 6px;
-                  background: #ffffff;
-                  border: 1px solid #F3F4F6;
-                  border-radius: 40px;
-                  cursor: pointer;
-                  transition: all 0.2s;
-                  padding-right: 16px;
+                  padding: 6px 8px 6px 6px; background: #ffffff;
+                  border: 1px solid #F3F4F6; border-radius: 40px;
+                  cursor: pointer; transition: all 0.2s; padding-right: 16px;
                 }
                 .profile-pill:hover {
-                  border-color: #DDD6FE;
-                  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.08);
+                  border-color: #DDD6FE; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.08);
                 }
-
                 .avatar-gradient {
                   width: 38px; height: 38px;
                   background: linear-gradient(135deg, #8B5CF6, #6D28D9);
-                  color: white;
-                  border-radius: 50%;
+                  color: white; border-radius: 50%;
                   display: flex; align-items: center; justify-content: center;
                   font-weight: 700; font-size: 15px;
                   box-shadow: 0 4px 10px rgba(109, 40, 217, 0.2);
                 }
-
                 .profile-text { display: flex; flex-direction: column; line-height: 1.3; }
                 .p-name { font-size: 14px; font-weight: 700; color: #1F2937; }
                 .p-role { font-size: 11px; font-weight: 600; color: var(--accent-purple); text-transform: uppercase; }
-                
                 .p-chevron { color: #9CA3AF; margin-left: 4px; }
               `}
             </style>
 
             <header className="top-bar">
-              {/* Fixed Search */}
               <div className="search-container">
                 <div className="search-wrapper">
                   <div className="search-box">
+                    <Search size={20} className="search-icon" />
                     <input type="text" placeholder="Search for employees, tasks, or reports..." />
                   </div>
                 </div>
               </div>
 
-              {/* Fixed Profile Area */}
               <div className="user-nav">
                 <div className="notif-btn">
                   <Bell size={20} />
@@ -262,7 +226,7 @@ function App() {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/recruitment" element={<Recruitment />} />
-                <Route path="/TeamLead" element={<TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />} />
+                <Route path="/TeamLead" element={ <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />} />
                 <Route path="*" element={<Navigate to="/" />} />
                 <Route path="/logout" element={<Logout />} />
               </Routes>
