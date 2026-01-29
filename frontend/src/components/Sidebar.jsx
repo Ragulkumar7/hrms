@@ -38,7 +38,7 @@ const Sidebar = () => {
           name: "Dashboard",
           path: "/",
           icon: <LayoutDashboard size={20} />,
-          allowed: ["Manager", "TL", "Employee"],
+          allowed: ["Manager", "TL", "Employee", "Accounts"],
         },
         {
           name: "Team Lead Portal",
@@ -73,7 +73,7 @@ const Sidebar = () => {
           name: "Attendance",
           path: "/attendance",
           icon: <CalendarCheck size={20} />,
-          allowed: ["Manager", "TL", "Employee"],
+          allowed: ["Manager", "TL", "Employee", "Accounts"],
         },
         {
           name: "Task Management",
@@ -112,6 +112,12 @@ const Sidebar = () => {
           icon: <TrendingUp size={20} />,
           allowed: ["Manager", "TL"],
         },
+        {
+          name: "Accounts Team",
+          path: "/accountsteam",
+          icon: <Banknote size={20} />,
+          allowed: ["Accounts"], // Intha role la iruntha thaan menu item-e kaatum
+        },
       ],
     },
     {
@@ -127,7 +133,7 @@ const Sidebar = () => {
           name: "Settings",
           path: "/settings",
           icon: <Settings size={20} />,
-          allowed: ["Manager", "TL", "Employee"],
+          allowed: ["Manager", "TL", "Employee", "Accounts"],
         },
       ],
     },
