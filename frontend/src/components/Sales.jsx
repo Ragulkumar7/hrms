@@ -445,7 +445,7 @@ const SalesExecutiveModule = () => {
                 className="glass-card mb-2"
                 style={{
                   padding: "15px",
-                  borderLeft: "4px solid #4f46e5",
+                  borderLeft: "4px solid #eeeef3",
                   background: "#fff",
                 }}
               >
@@ -479,7 +479,7 @@ const SalesExecutiveModule = () => {
                           padding: "4px 24px 4px 8px",
                           fontSize: "11px",
                           borderRadius: "4px",
-                          border: "1px solid #e2e8f0",
+                          border: "1px solid #f3f5f7",
                           backgroundColor: "#f8fafc",
                           cursor: "pointer",
                           outline: "none",
@@ -501,7 +501,7 @@ const SalesExecutiveModule = () => {
                           right: "6px",
                           top: "25%",
                           pointerEvents: "none",
-                          color: "#94a3b8",
+                          color: "#040404",
                         }}
                       />
                     </div>
@@ -521,7 +521,7 @@ const SalesExecutiveModule = () => {
                   style={{
                     fontSize: "10px",
                     marginTop: "4px",
-                    color: "#4f46e5",
+                    color: "#64748b",
                     fontWeight: "600",
                   }}
                 >
