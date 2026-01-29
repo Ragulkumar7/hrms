@@ -1,57 +1,144 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
-import { 
-  LayoutDashboard, CalendarCheck, ClipboardList, Banknote, 
-  Users, Briefcase, TrendingUp, Settings, Cpu, FileText, 
-  LogOut, ShieldCheck, Fingerprint, Menu, X, UserCheck
-} from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useUser } from "../context/UserContext";
+import {
+  LayoutDashboard,
+  CalendarCheck,
+  ClipboardList,
+  Banknote,
+  Users,
+  Briefcase,
+  TrendingUp,
+  Settings,
+  Cpu,
+  FileText,
+  LogOut,
+  ShieldCheck,
+  Fingerprint,
+  Menu,
+  X,
+  UserCheck,
+} from "lucide-react";
 
 const Sidebar = () => {
   const location = useLocation();
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => { setIsOpen(false); }, [location]);
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location]);
 
   // --- MENU ITEMS ---
   const sections = [
     {
-      label: 'Main',
+      label: "Main",
       items: [
-        { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} />, allowed: ['Manager', 'TL', 'Employee'] },
-        { name: 'Team Lead Portal', path: '/teamlead', icon: <Users size={20} />, allowed: ['TL'] },
-        { name: 'HR Management', path: '/hrManagement', icon: <Fingerprint size={20} />, allowed: ['Manager', 'TL'] },
-        { name: 'Employees Directory', path: '/employees', icon: <Users size={20} />, allowed: ['Manager'] },
-        { name: 'Manager Portal', path: '/manager', icon: <ShieldCheck size={20} />, allowed: ['Manager', 'TL'] },
-      ]
+        {
+          name: "Dashboard",
+          path: "/",
+          icon: <LayoutDashboard size={20} />,
+          allowed: ["Manager", "TL", "Employee"],
+        },
+        {
+          name: "Team Lead Portal",
+          path: "/teamlead",
+          icon: <Users size={20} />,
+          allowed: ["TL"],
+        },
+        {
+          name: "HR Management",
+          path: "/hrManagement",
+          icon: <Fingerprint size={20} />,
+          allowed: ["Manager", "TL"],
+        },
+        {
+          name: "Employees Directory",
+          path: "/employees",
+          icon: <Users size={20} />,
+          allowed: ["Manager"],
+        },
+        {
+          name: "Manager Portal",
+          path: "/manager",
+          icon: <ShieldCheck size={20} />,
+          allowed: ["Manager", "TL"],
+        },
+      ],
     },
     {
-      label: 'Operations',
+      label: "Operations",
       items: [
-        { name: 'Attendance', path: '/attendance', icon: <CalendarCheck size={20} />, allowed: ['Manager', 'TL', 'Employee'] },
-        { name: 'Task Management', path: '/tasks', icon: <ClipboardList size={20} />, allowed: ['Manager', 'TL', 'Employee'] },
+        {
+          name: "Attendance",
+          path: "/attendance",
+          icon: <CalendarCheck size={20} />,
+          allowed: ["Manager", "TL", "Employee"],
+        },
+        {
+          name: "Task Management",
+          path: "/tasks",
+          icon: <ClipboardList size={20} />,
+          allowed: ["Manager", "TL", "Employee"],
+        },
         // --- NEW ITEM ADDED HERE ---
-        { name: 'Self Assigned Tasks', path: '/self-task', icon: <UserCheck size={20} />, allowed: ['Manager', 'TL', 'Employee'] },
-        { name: 'Payroll & Accounts', path: '/payroll', icon: <Banknote size={20} />, allowed: ['Manager'] },
-        { name: 'IT & Operations', path: '/it', icon: <Cpu size={20} />, allowed: ['Manager'] },
-        { name: 'Recruitment', path: '/recruitment', icon: <Briefcase size={20} />, allowed: ['Manager'] },
-        { name: 'Sales Pipeline', path: '/sales', icon: <TrendingUp size={20} />, allowed: ['Manager', 'TL'] },
-      ]
+        {
+          name: "Self Assigned Tasks",
+          path: "/self-task",
+          icon: <UserCheck size={20} />,
+          allowed: ["Manager", "TL", "Employee"],
+        },
+        {
+          name: "Payroll & Accounts",
+          path: "/payroll",
+          icon: <Banknote size={20} />,
+          allowed: ["Manager"],
+        },
+        {
+          name: "IT & Operations",
+          path: "/it",
+          icon: <Cpu size={20} />,
+          allowed: ["Manager"],
+        },
+        {
+          name: "Recruitment",
+          path: "/recruitment",
+          icon: <Briefcase size={20} />,
+          allowed: ["Manager"],
+        },
+        {
+          name: "Sales Manager",
+          path: "/sales",
+          icon: <TrendingUp size={20} />,
+          allowed: ["Manager", "TL"],
+        },
+      ],
     },
     {
-      label: 'System',
+      label: "System",
       items: [
-        { name: 'Reports', path: '/reports', icon: <FileText size={20} />, allowed: ['Manager', 'TL'] },
-        { name: 'Settings', path: '/settings', icon: <Settings size={20} />, allowed: ['Manager', 'TL', 'Employee'] },
-      ]
-    }
+        {
+          name: "Reports",
+          path: "/reports",
+          icon: <FileText size={20} />,
+          allowed: ["Manager", "TL"],
+        },
+        {
+          name: "Settings",
+          path: "/settings",
+          icon: <Settings size={20} />,
+          allowed: ["Manager", "TL", "Employee"],
+        },
+      ],
+    },
   ];
 
-  const activeSections = sections.map(section => ({
-    ...section,
-    items: section.items.filter(item => item.allowed.includes(user.role))
-  })).filter(section => section.items.length > 0);
+  const activeSections = sections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => item.allowed.includes(user.role)),
+    }))
+    .filter((section) => section.items.length > 0);
 
   return (
     <>
@@ -235,11 +322,13 @@ const Sidebar = () => {
       </button>
 
       {/* Overlay */}
-      <div className={`sidebar-overlay ${isOpen ? 'visible' : ''}`} onClick={() => setIsOpen(false)} />
+      <div
+        className={`sidebar-overlay ${isOpen ? "visible" : ""}`}
+        onClick={() => setIsOpen(false)}
+      />
 
       <div className="sidebar-wrapper">
-        <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-          
+        <aside className={`sidebar ${isOpen ? "open" : ""}`}>
           {/* Header */}
           <div className="sidebar-header">
             <div className="logo-glass">S</div>
@@ -248,8 +337,8 @@ const Sidebar = () => {
               <span className="brand-badge">{user.role} Workspace</span>
             </div>
             {/* Close Button (Mobile Only) */}
-            <div className="mobile-only" style={{marginLeft:'auto'}}>
-                 {/* CSS will handle visibility */}
+            <div className="mobile-only" style={{ marginLeft: "auto" }}>
+              {/* CSS will handle visibility */}
             </div>
           </div>
 
@@ -262,10 +351,10 @@ const Sidebar = () => {
                   {section.items.map((item, iIndex) => {
                     const isActive = location.pathname === item.path;
                     return (
-                      <Link 
-                        to={item.path} 
-                        key={iIndex} 
-                        className={`nav-item ${isActive ? 'active' : ''}`}
+                      <Link
+                        to={item.path}
+                        key={iIndex}
+                        className={`nav-item ${isActive ? "active" : ""}`}
                       >
                         <div className="nav-content">
                           <span className="nav-icon">{item.icon}</span>
@@ -283,9 +372,7 @@ const Sidebar = () => {
           {/* New Premium Footer (User Profile) */}
           <div className="profile-card">
             <div className="profile-info">
-              <div className="avatar-circle">
-                {user.name.charAt(0)}
-              </div>
+              <div className="avatar-circle">{user.name.charAt(0)}</div>
               <div className="user-details">
                 <h4>{user.name}</h4>
                 <p>Online</p>
@@ -295,7 +382,6 @@ const Sidebar = () => {
               <LogOut size={16} />
             </Link>
           </div>
-
         </aside>
       </div>
     </>
