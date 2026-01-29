@@ -172,7 +172,7 @@ function App() {
 
                 {/* --- ADDED THIS SPECIFIC ROUTE FOR SUBDIRECTORY --- */}
                 <Route
-                  path="/tasks/self-assigned"
+                  path="self-task"
                   element={<SelfAssignedTask />}
                 />
 
