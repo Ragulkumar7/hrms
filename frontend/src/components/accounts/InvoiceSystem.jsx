@@ -1,138 +1,99 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Receipt, Download } from 'lucide-react';
+import { FileText, Plus, Trash2, Printer, Download } from 'lucide-react';
 
 const InvoiceSystem = () => {
-  const [invoiceData, setInvoiceData] = useState({
-    invoiceNo: `INV-${new Date().getFullYear()}-001`,
+  const [invoice, setInvoice] = useState({
+    client: '',
+    invoiceNo: 'INV-2026-101',
     date: new Date().toISOString().split('T')[0],
-    clientName: '',
-    bankName: '',
-    items: [{ id: Date.now(), desc: '', qty: 1, rate: 0, gst: 18, gstAmt: 0, total: 0 }],
-    discount: 0,
-    subtotal: 0,
-    totalGst: 0,
-    grandTotal: 0
+    items: [{ id: 1, desc: '', qty: 1, rate: 0, gst: 18 }],
+    discount: 0
   });
 
-  // Calculate totals whenever items or discount change
+  const [totals, setTotals] = useState({ sub: 0, tax: 0, grand: 0 });
+
   useEffect(() => {
-    let sub = 0;
-    let gst = 0;
-    const updatedItems = invoiceData.items.map(item => {
-      const rowSub = item.qty * item.rate;
-      const rowGst = (rowSub * item.gst) / 100;
-      const rowTotal = rowSub + rowGst;
-      sub += rowSub;
-      gst += rowGst;
-      return { ...item, gstAmt: rowGst.toFixed(2), total: rowTotal.toFixed(2) };
-    });
+    const sub = invoice.items.reduce((sum, item) => sum + (item.qty * item.rate), 0);
+    const tax = invoice.items.reduce((sum, item) => sum + (item.qty * item.rate * item.gst / 100), 0);
+    setTotals({ sub, tax, grand: sub + tax - invoice.discount });
+  }, [invoice]);
 
-    const grand = sub + gst - invoiceData.discount;
-    setInvoiceData(prev => ({ 
-      ...prev, 
-      subtotal: sub.toFixed(2), 
-      totalGst: gst.toFixed(2), 
-      grandTotal: grand.toFixed(2) 
-    }));
-  }, [invoiceData.items, invoiceData.discount]);
-
-  const addItem = () => {
-    setInvoiceData({
-      ...invoiceData,
-      items: [...invoiceData.items, { id: Date.now(), desc: '', qty: 1, rate: 0, gst: 18, gstAmt: 0, total: 0 }]
-    });
-  };
-
-  const removeItem = (id) => {
-    if (invoiceData.items.length > 1) {
-      setInvoiceData({ ...invoiceData, items: invoiceData.items.filter(i => i.id !== id) });
-    }
-  };
-
-  const updateItem = (id, field, val) => {
-    setInvoiceData({
-      ...invoiceData,
-      items: invoiceData.items.map(i => i.id === id ? { ...i, [field]: val } : i)
+  const updateRow = (id, field, val) => {
+    setInvoice({
+      ...invoice,
+      items: invoice.items.map(item => item.id === id ? { ...item, [field]: val } : item)
     });
   };
 
   return (
-    <div className="invoice-container">
-      <style>{`
-        .invoice-container { font-family: 'Inter', sans-serif; color: #1e293b; }
-        .inv-header-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        .form-group label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; }
-        .inv-input { padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; transition: 0.2s; }
-        .inv-input:focus { border-color: #7C3AED; box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1); }
-        
-        .table-responsive { overflow-x: auto; margin-top: 20px; border: 1px solid #f1f5f9; border-radius: 12px; }
-        .inv-table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        .inv-table th { background: #f8fafc; padding: 15px; text-align: left; font-size: 11px; text-transform: uppercase; color: #64748b; }
-        .inv-table td { padding: 12px 15px; border-top: 1px solid #f1f5f9; }
-        
-        .summary-wrapper { display: flex; justify-content: flex-end; margin-top: 30px; }
-        .summary-box { background: #f8fafc; padding: 20px; border-radius: 12px; width: 100%; max-width: 350px; }
-        .sum-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
-        .sum-row.grand { border-top: 2px solid #e2e8f0; padding-top: 10px; margin-top: 10px; font-weight: 800; color: #1e1b4b; font-size: 18px; }
-        
-        @media (max-width: 768px) {
-          .inv-header-grid { grid-template-columns: 1fr; }
-          .summary-box { max-width: 100%; }
-        }
-      `}</style>
-
-      <div className="inv-header-grid">
-        <div className="form-group">
-          <label>Invoice No</label>
-          <input type="text" className="inv-input" value={invoiceData.invoiceNo} readOnly />
+    <div style={{ padding: '30px', background: '#f8fafc' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
+        <div>
+          <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#1e1b4b' }}>INVOICE SYSTEM</h1>
+          <p style={{ color: '#64748b' }}>Project billing and client receivables</p>
         </div>
-        <div className="form-group">
-          <label>Client Name</label>
-          <input type="text" className="inv-input" placeholder="Enter Client" onChange={(e) => setInvoiceData({...invoiceData, clientName: e.target.value})} />
-        </div>
-        <div className="form-group">
-          <label>Date</label>
-          <input type="date" className="inv-input" value={invoiceData.date} onChange={(e) => setInvoiceData({...invoiceData, date: e.target.value})} />
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button style={{ padding: '10px 20px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}><Printer size={16}/> Print</button>
+          <button style={{ padding: '10px 20px', borderRadius: '8px', background: '#7c3aed', color: 'white', border: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}><Download size={16}/> Export PDF</button>
         </div>
       </div>
 
-      <div className="table-responsive">
-        <table className="inv-table">
-          <thead>
-            <tr>
-              <th width="40%">Description</th>
-              <th width="10%">Qty</th>
-              <th width="15%">Rate</th>
-              <th width="10%">GST %</th>
-              <th width="15%">Total</th>
-              <th width="10%"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoiceData.items.map(item => (
-              <tr key={item.id}>
-                <td><input type="text" className="inv-input" style={{width:'90%'}} placeholder="Service details" onChange={(e) => updateItem(item.id, 'desc', e.target.value)} /></td>
-                <td><input type="number" className="inv-input" style={{width:'60px'}} value={item.qty} onChange={(e) => updateItem(item.id, 'qty', parseInt(e.target.value) || 0)} /></td>
-                <td><input type="number" className="inv-input" style={{width:'100px'}} placeholder="0.00" onChange={(e) => updateItem(item.id, 'rate', parseFloat(e.target.value) || 0)} /></td>
-                <td><input type="number" className="inv-input" style={{width:'60px'}} value={item.gst} onChange={(e) => updateItem(item.id, 'gst', parseInt(e.target.value) || 0)} /></td>
-                <td style={{fontWeight:'700'}}>₹ {item.total}</td>
-                <td><button onClick={() => removeItem(item.id)} style={{border:'none', background:'none', color:'#ef4444', cursor:'pointer'}}><Trash2 size={18}/></button></td>
+      <div style={{ background: 'white', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+        <div style={{ padding: '30px', borderBottom: '1px solid #f1f5f9', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '30px' }}>
+          <div>
+            <label style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', display: 'block', marginBottom: '8px' }}>CLIENT DETAILS</label>
+            <input placeholder="Enter Client Name" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }} value={invoice.client} onChange={e => setInvoice({...invoice, client: e.target.value})} />
+          </div>
+          <div>
+            <label style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', display: 'block', marginBottom: '8px' }}>INVOICE NO</label>
+            <input value={invoice.invoiceNo} readOnly style={{ width: '100%', padding: '12px', borderRadius: '8px', border: 'none', background: '#f8fafc', fontWeight: '700' }} />
+          </div>
+          <div>
+            <label style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', display: 'block', marginBottom: '8px' }}>DATE</label>
+            <input type="date" value={invoice.date} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }} onChange={e => setInvoice({...invoice, date: e.target.value})} />
+          </div>
+        </div>
+
+        <div style={{ padding: '30px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ textAlign: 'left', fontSize: '12px', color: '#64748b' }}>
+                <th style={{ paddingBottom: '15px' }}>DESCRIPTION</th>
+                <th style={{ paddingBottom: '15px', width: '100px' }}>QTY</th>
+                <th style={{ paddingBottom: '15px', width: '150px' }}>RATE (₹)</th>
+                <th style={{ paddingBottom: '15px', width: '100px' }}>GST %</th>
+                <th style={{ paddingBottom: '15px', width: '120px', textAlign: 'right' }}>TOTAL</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {invoice.items.map(item => (
+                <tr key={item.id} style={{ borderBottom: '1px solid #f8fafc' }}>
+                  <td style={{ padding: '15px 0' }}><input style={{ border: 'none', width: '100%', fontSize: '14px' }} placeholder="Project Service Description..." value={item.desc} onChange={e => updateRow(item.id, 'desc', e.target.value)} /></td>
+                  <td><input type="number" style={{ border: '1px solid #e2e8f0', width: '60px', padding: '5px', borderRadius: '4px' }} value={item.qty} onChange={e => updateRow(item.id, 'qty', parseInt(e.target.value))} /></td>
+                  <td><input type="number" style={{ border: '1px solid #e2e8f0', width: '100px', padding: '5px', borderRadius: '4px' }} value={item.rate} onChange={e => updateRow(item.id, 'rate', parseFloat(e.target.value))} /></td>
+                  <td style={{ fontSize: '14px', color: '#64748b' }}>{item.gst}%</td>
+                  <td style={{ textAlign: 'right', fontWeight: '700' }}>₹ {(item.qty * item.rate * (1 + item.gst / 100)).toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          
+          <button onClick={() => setInvoice({...invoice, items: [...invoice.items, {id: Date.now(), desc: '', qty: 1, rate: 0, gst: 18}]})} style={{ marginTop: '20px', border: 'none', background: 'none', color: '#7c3aed', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}><Plus size={18}/> ADD LINE</button>
+        </div>
 
-      <button onClick={addItem} style={{marginTop:'15px', background:'#10b981', color:'white', border:'none', padding:'10px 20px', borderRadius:'8px', cursor:'pointer', fontWeight:'700'}}>+ Add Line Item</button>
-
-      <div className="summary-wrapper">
-        <div className="summary-box">
-          <div className="sum-row"><span>Subtotal:</span><span>₹ {invoiceData.subtotal}</span></div>
-          <div className="sum-row"><span>Tax (GST):</span><span>₹ {invoiceData.totalGst}</span></div>
-          <div className="sum-row"><span>Discount:</span><input type="number" className="inv-input" style={{width:'100px', textAlign:'right'}} value={invoiceData.discount} onChange={(e) => setInvoiceData({...invoiceData, discount: parseFloat(e.target.value) || 0})} /></div>
-          <div className="sum-row grand"><span>Grand Total:</span><span>₹ {invoiceData.grandTotal}</span></div>
-          <button style={{width:'100%', marginTop:'20px', background:'#1e1b4b', color:'white', border:'none', padding:'15px', borderRadius:'10px', fontWeight:'700', cursor:'pointer'}}>Save & Generate PDF</button>
+        <div style={{ background: '#f8fafc', padding: '30px', display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ width: '300px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '14px' }}><span>Subtotal</span><span>₹ {totals.sub.toFixed(2)}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '14px' }}><span>Total GST</span><span>₹ {totals.tax.toFixed(2)}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '14px', alignItems: 'center' }}>
+              <span>Discount</span>
+              <input type="number" style={{ width: '80px', padding: '5px', border: '1px solid #cbd5e1', borderRadius: '4px', textAlign: 'right' }} value={invoice.discount} onChange={e => setInvoice({...invoice, discount: parseFloat(e.target.value) || 0})} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px', paddingTop: '15px', borderTop: '2px solid #e2e8f0', fontWeight: '900', fontSize: '20px', color: '#1e1b4b' }}>
+              <span>Grand Total</span>
+              <span>₹ {totals.grand.toLocaleString()}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

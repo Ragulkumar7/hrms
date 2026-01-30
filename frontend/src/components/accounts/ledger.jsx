@@ -1,110 +1,105 @@
 import React, { useState } from 'react';
-import { Calculator, UserCheck, AlertCircle, FileText } from 'lucide-react';
+import { Plus, Trash2, ArrowUpCircle, ArrowDownCircle, Wallet, List } from 'lucide-react';
 
-const SalaryProcessor = () => {
-  const [salary, setSalary] = useState({
-    empId: '',
-    fixedBasic: 0,
-    fixedHra: 0,
-    monthDays: 30,
-    lopDays: 0,
-    earnedBasic: 0,
-    earnedHra: 0,
-    pfDeduct: 0,
-    netPay: 0
+const Ledger = () => {
+  const [entries, setEntries] = useState([
+    { id: 1, date: '2026-01-30', type: 'Credit', category: 'Project Alpha', notes: 'Client Office Install', amount: 2030.00 },
+    { id: 2, date: '2026-01-29', type: 'Debit', category: 'Software', notes: 'Monthly Subscription', amount: 550.00 }
+  ]);
+
+  const [newEntry, setNewEntry] = useState({
+    date: new Date().toISOString().split('T')[0],
+    type: 'Credit',
+    category: '',
+    notes: '',
+    amount: ''
   });
 
-  // Core Calculation Logic
-  const calculateSalary = (fields) => {
-    const updated = { ...salary, ...fields };
-    const paidDays = updated.monthDays - updated.lopDays;
-    const factor = paidDays / updated.monthDays;
+  const totals = entries.reduce((acc, curr) => {
+    if (curr.type === 'Credit') acc.credit += curr.amount;
+    else acc.debit += curr.amount;
+    acc.balance = acc.credit - acc.debit;
+    return acc;
+  }, { credit: 0, debit: 0, balance: 0 });
 
-    const eBasic = updated.fixedBasic * factor;
-    const eHra = updated.fixedHra * factor;
-    
-    // PF Deduction logic: 12% or cap at 1800
-    const pf = eBasic > 15000 ? 1800 : eBasic * 0.12; 
-    const net = (eBasic + eHra) - pf;
-
-    setSalary({
-      ...updated,
-      earnedBasic: eBasic.toFixed(2),
-      earnedHra: eHra.toFixed(2),
-      pfDeduct: pf.toFixed(2),
-      netPay: net.toFixed(2)
-    });
+  const handleAddEntry = () => {
+    if (!newEntry.amount || !newEntry.category) {
+      alert("Please fill in the category and amount");
+      return;
+    }
+    setEntries([...entries, { ...newEntry, id: Date.now(), amount: parseFloat(newEntry.amount) }]);
+    setNewEntry({ ...newEntry, category: '', notes: '', amount: '' });
   };
 
   return (
-    <div className="salary-processor">
-      <style>{`
-        .salary-processor { color: #1e293b; }
-        .payroll-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
-        .calc-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px; }
-        .form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-        
-        .net-payable-box { 
-          background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); 
-          color: white; border-radius: 16px; padding: 30px; 
-          display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .net-val { font-size: 36px; font-weight: 800; color: #D4AF37; margin: 15px 0; }
-        .salary-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 5px; }
-        
-        @media (max-width: 900px) { .payroll-grid { grid-template-columns: 1fr; } }
-      `}</style>
+    <div style={{ padding: '20px', background: '#f8fafc', minHeight: '100vh' }}>
+      <div style={{ marginBottom: '20px' }}>
+        <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#1e1b4b' }}>General Ledger</h2>
+        <p style={{ fontSize: '12px', color: '#64748b' }}>Monitor and manage company financial transactions</p>
+      </div>
 
-      <div className="payroll-grid">
-        <div className="calc-card">
-          <h3 style={{marginBottom:'20px', display:'flex', alignItems:'center', gap:'10px'}}><Calculator size={20}/> Earnings Settings</h3>
-          
-          <div className="form-row-3">
-            <div className="form-group">
-              <label>Employee ID</label>
-              <input type="text" className="inv-input" placeholder="IGS101" onChange={(e) => setSalary({...salary, empId: e.target.value})} />
-            </div>
-            <div className="form-group">
-              <label>Month Days</label>
-              <input type="number" className="inv-input" value={salary.monthDays} onChange={(e) => calculateSalary({ monthDays: parseInt(e.target.value) || 30 })} />
-            </div>
-            <div className="form-group">
-              <label>LOP Days</label>
-              <input type="number" className="inv-input" value={salary.lopDays} onChange={(e) => calculateSalary({ lopDays: parseInt(e.target.value) || 0 })} />
+      {/* Summary Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '25px' }}>
+        {[
+          { label: 'TOTAL CREDIT', val: totals.credit, color: '#10b981', icon: <ArrowUpCircle size={20}/> },
+          { label: 'TOTAL DEBIT', val: totals.debit, color: '#ef4444', icon: <ArrowDownCircle size={20}/> },
+          { label: 'NET BALANCE', val: totals.balance, color: '#7c3aed', icon: <Wallet size={20}/> },
+          { label: 'TOTAL ENTRIES', val: entries.length, color: '#1e1b4b', icon: <List size={20}/> }
+        ].map((card, i) => (
+          <div key={i} style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', borderLeft: `4px solid ${card.color}` }}>
+            <span style={{ fontSize: '10px', fontWeight: '800', color: '#64748b' }}>{card.label}</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+              <span style={{ fontSize: '18px', fontWeight: '800', color: card.color }}>₹ {card.val.toLocaleString()}</span>
+              <span style={{ opacity: 0.3 }}>{card.icon}</span>
             </div>
           </div>
+        ))}
+      </div>
 
-          <div className="form-row-3" style={{borderTop:'1px solid #e2e8f0', paddingTop:'20px'}}>
-            <div className="form-group">
-              <label>Fixed Basic</label>
-              <input type="number" className="inv-input" placeholder="0.00" onChange={(e) => calculateSalary({ fixedBasic: parseFloat(e.target.value) || 0 })} />
-            </div>
-            <div className="form-group">
-              <label>Fixed HRA</label>
-              <input type="number" className="inv-input" placeholder="0.00" onChange={(e) => calculateSalary({ fixedHra: parseFloat(e.target.value) || 0 })} />
-            </div>
-          </div>
-
-          <div style={{marginTop:'30px', background:'white', borderRadius:'12px', padding:'20px'}}>
-            <h4 style={{fontSize:'12px', color:'#64748b', marginBottom:'15px'}}>EARNED BREAKDOWN</h4>
-            <div style={{display:'flex', justifyContent:'space-between', marginBottom:'8px'}}><span>Earned Basic:</span><span style={{fontWeight:'700'}}>₹ {salary.earnedBasic}</span></div>
-            <div style={{display:'flex', justifyContent:'space-between', marginBottom:'8px'}}><span>Earned HRA:</span><span style={{fontWeight:'700'}}>₹ {salary.earnedHra}</span></div>
-            <div style={{display:'flex', justifyContent:'space-between', color:'#ef4444'}}><span>Statutory PF:</span><span style={{fontWeight:'700'}}>- ₹ {salary.pfDeduct}</span></div>
-          </div>
+      {/* Entry Form */}
+      <div style={{ background: 'white', padding: '20px', borderRadius: '12px', marginBottom: '25px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+        <h4 style={{ marginBottom: '15px', fontSize: '14px', color: '#1e1b4b' }}>Add Manual Entry</h4>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 2fr 1fr auto', gap: '10px', alignItems: 'end' }}>
+          <div><label style={{display:'block', fontSize:'11px', marginBottom:'5px'}}>Date</label><input type="date" value={newEntry.date} onChange={e => setNewEntry({...newEntry, date: e.target.value})} style={{width:'100%', padding:'8px', border:'1px solid #e2e8f0', borderRadius:'6px'}}/></div>
+          <div><label style={{display:'block', fontSize:'11px', marginBottom:'5px'}}>Type</label><select value={newEntry.type} onChange={e => setNewEntry({...newEntry, type: e.target.value})} style={{width:'100%', padding:'8px', border:'1px solid #e2e8f0', borderRadius:'6px'}}><option>Credit</option><option>Debit</option></select></div>
+          <div><label style={{display:'block', fontSize:'11px', marginBottom:'5px'}}>Category</label><input type="text" value={newEntry.category} onChange={e => setNewEntry({...newEntry, category: e.target.value})} style={{width:'100%', padding:'8px', border:'1px solid #e2e8f0', borderRadius:'6px'}}/></div>
+          <div><label style={{display:'block', fontSize:'11px', marginBottom:'5px'}}>Notes</label><input type="text" value={newEntry.notes} onChange={e => setNewEntry({...newEntry, notes: e.target.value})} style={{width:'100%', padding:'8px', border:'1px solid #e2e8f0', borderRadius:'6px'}}/></div>
+          <div><label style={{display:'block', fontSize:'11px', marginBottom:'5px'}}>Amount</label><input type="number" value={newEntry.amount} onChange={e => setNewEntry({...newEntry, amount: e.target.value})} style={{width:'100%', padding:'8px', border:'1px solid #e2e8f0', borderRadius:'6px'}}/></div>
+          <button onClick={handleAddEntry} style={{background:'#1e1b4b', color:'white', border:'none', padding:'10px 20px', borderRadius:'6px', cursor:'pointer'}}><Plus size={18}/></button>
         </div>
+      </div>
 
-        <div className="net-payable-box">
-          <UserCheck size={40} style={{opacity:0.5}}/>
-          <p style={{marginTop:'20px', fontWeight:'600'}}>Monthly Net Payable</p>
-          <div className="net-val">₹ {salary.netPay}</div>
-          <div style={{fontSize:'12px', opacity:0.7, textAlign:'center'}}>Includes basic, HRA minus PF deductions based on paid days.</div>
-          <button style={{marginTop:'30px', background:'#D4AF37', color:'#1e1b4b', border:'none', padding:'15px 40px', borderRadius:'10px', fontWeight:'800', cursor:'pointer', width:'100%'}}>
-             <FileText size={18} style={{verticalAlign:'middle', marginRight:'8px'}}/> Finalize & Print Slip
-          </button>
-        </div>
+      {/* Table */}
+      <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <thead>
+            <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+              <th style={{ padding: '15px', fontSize: '12px' }}>DATE</th>
+              <th style={{ padding: '15px', fontSize: '12px' }}>TYPE</th>
+              <th style={{ padding: '15px', fontSize: '12px' }}>CATEGORY</th>
+              <th style={{ padding: '15px', fontSize: '12px' }}>NOTES</th>
+              <th style={{ padding: '15px', fontSize: '12px' }}>AMOUNT</th>
+              <th style={{ padding: '15px', fontSize: '12px' }}>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map(item => (
+              <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: '15px', fontSize: '13px' }}>{item.date}</td>
+                <td style={{ padding: '15px' }}>
+                  <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '11px', background: item.type === 'Credit' ? '#dcfce7' : '#fee2e2', color: item.type === 'Credit' ? '#166534' : '#991b1b' }}>{item.type}</span>
+                </td>
+                <td style={{ padding: '15px', fontSize: '13px' }}>{item.category}</td>
+                <td style={{ padding: '15px', fontSize: '13px', color: '#64748b' }}>{item.notes}</td>
+                <td style={{ padding: '15px', fontSize: '13px', fontWeight: '700' }}>₹ {item.amount.toLocaleString()}</td>
+                <td style={{ padding: '15px' }}><button style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={16}/></button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
 };
 
-export default SalaryProcessor;
+export default Ledger;
