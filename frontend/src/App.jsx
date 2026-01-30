@@ -11,9 +11,10 @@ import { UserProvider, useUser } from "./context/UserContext";
 
 // --- COMPONENT IMPORTS ---
 import Sidebar from "./components/Sidebar";
-import Accounts from "./components/Accounts";
+import Accounts from "./components/PayrollAccounts";
 import AdminDashboard from "./components/AdminDashboard";
 import Attendance from "./components/Attendance";
+import EmployeeAttendance from "./components/EmployeeAttendance";
 import ITOperations from "./components/ITOperations";
 import Employees from "./components/Employees";
 import ManagerDashboard from "./components/ManagerDashboard";
@@ -27,7 +28,15 @@ import HRManagement from "./components/hrManagement";
 import TeamLeadDashboard from "./components/TeamLead";
 import SelfAssignedTask from "./components/SelfAssignedTask";
 import Logout from "./components/Logout";
-import DigitalMarketing from "./components/DigitalMarketing"; // Added Import
+import DigitalMarketing from "./components/DigitalMarketing";
+import TeamsChat from "./components/TeamsChat";
+
+// --- SEPARATE DIGITAL MARKETING IMPORTS ---
+import DigitalManager from "./components/DigitalManager";
+import DigitalExecutive from "./components/DigitalExecutive";
+
+// --- ACCOUNTS TEAM COMPONENT (MUKKIAM) ---
+import AccountsTeam from "./components/Accountsteam"; // Invoice, Ledger, PO handle panna
 
 // --- NEW ACCOUNTS IMPORTS ---
 import purchaseorder from "./components/purchaseorder";
@@ -37,7 +46,7 @@ import ledger from "./components/accounts/ledger";
 import { Bell, Search, ChevronDown } from "lucide-react";
 import "./App.css";
 
-// --- HEADER PROFILE (Fixed Optional Chaining) ---
+// --- HEADER PROFILE ---
 const HeaderProfile = () => {
   const { user } = useUser();
   return (
@@ -69,36 +78,19 @@ const RoleSwitcher = () => {
         zIndex: 9999,
       }}
     >
-      <p
-        style={{
-          fontSize: "10px",
-          fontWeight: "800",
-          marginBottom: "8px",
-          color: "#6D28D9",
-          textTransform: "uppercase",
-        }}
-      >
+      <p style={{ fontSize: "10px", fontWeight: "800", marginBottom: "8px", color: "#6D28D9", textTransform: "uppercase" }}>
         Current: {user?.role}
       </p>
       <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
         {["Manager", "HR", "Accounts", "TL", "DM", "Employee"].map((role) => (
           <button
             key={role}
-            onClick={() =>
-              login(
-                role === "TL" ? "TL" : role,
-                role === "TL" ? "TL-01" : undefined,
-              )
-            }
+            onClick={() => login(role === "TL" ? "TL" : role, role === "TL" ? "TL-01" : undefined)}
             style={{
-              fontSize: "10px",
-              padding: "5px 10px",
-              cursor: "pointer",
-              border: "1px solid #DDD6FE",
+              fontSize: "10px", padding: "5px 10px", cursor: "pointer", border: "1px solid #DDD6FE",
               background: user?.role === role ? "#6D28D9" : "#F5F3FF",
               color: user?.role === role ? "white" : "#6D28D9",
-              borderRadius: "6px",
-              fontWeight: "700",
+              borderRadius: "6px", fontWeight: "700",
             }}
           >
             {role}
@@ -114,15 +106,10 @@ const DashboardHome = () => {
   if (user?.role === "Employee") return <EmployeeDashboard />;
   if (user?.role === "TL")
     return (
-      <TeamLeadDashboard
-        allTasks={[]}
-        setAllTasks={() => {}}
-        addNewTask={() => {}}
-      />
+      <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />
     );
-  // ADDED DM REDIRECT
   if (user?.role === "DM") return <DigitalMarketing />;
-
+  if (user?.role === "Accounts") return <AccountsTeam />; // ADDED: Accounts login panna intha jsx varum
   return <AdminDashboard />;
 };
 
@@ -132,51 +119,7 @@ function App() {
       <Router>
         <div className="app-wrapper">
           <Sidebar />
-
           <main className="main-content">
-            <style>
-              {`
-                :root {
-                  --header-height: 85px;
-                  --accent-purple: #7C3AED;
-                }
-                .top-bar {
-                  height: var(--header-height);
-                  background: linear-gradient(to bottom, #ffffff, #fafafa);
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                  padding: 0 40px;
-                  position: sticky;
-                  top: 0;
-                  z-index: 40;
-                  border-bottom: 1px solid #F3F4F6;
-                }
-                .search-container { flex: 1; }
-                .search-wrapper { position: relative; width: 380px; }
-                .search-box {
-                  display: flex; align-items: center; height: 46px;
-                  background: #ffffff; border: 1px solid #E5E7EB;
-                  border-radius: 12px; padding: 0 16px;
-                  transition: all 0.3s ease; gap: 12px;
-                }
-                .user-nav { display: flex; align-items: center; gap: 24px; }
-                .profile-pill {
-                  display: flex; align-items: center; gap: 12px;
-                  padding: 6px 8px 6px 6px; background: #ffffff;
-                  border: 1px solid #F3F4F6; border-radius: 40px;
-                  cursor: pointer; padding-right: 16px;
-                }
-                .avatar-gradient {
-                  width: 38px; height: 38px;
-                  background: linear-gradient(135deg, #8B5CF6, #6D28D9);
-                  color: white; border-radius: 50%;
-                  display: flex; align-items: center; justify-content: center;
-                  font-weight: 700;
-                }
-              `}
-            </style>
-
             <header className="top-bar">
               <div className="search-container">
                 <div className="search-wrapper">
@@ -195,37 +138,40 @@ function App() {
             <div className="content-area">
               <Routes>
                 <Route path="/" element={<DashboardHome />} />
+                <Route path="/teams" element={<TeamsChat />} />
                 <Route path="/hrManagement" element={<HRManagement />} />
                 <Route path="/employees" element={<Employees />} />
                 <Route path="/manager" element={<ManagerDashboard />} />
-                <Route path="/payroll" element={<Accounts />} />
-
-                {/* --- NEW ACCOUNTS ROUTES --- */}
+                
+                {/* --- ACCOUNTS ROUTES (CORRECTED) --- */}
+                <Route path="/payroll" element={<Accounts />} /> {/* Older Payroll View */}
+                <Route path="/accounts-team" element={<AccountsTeam />} /> {/* New Invoice/Ledger/PO View */}
+                
                 <Route path="/purchase-order" element={<purchaseorder />} />
                 <Route path="/invoice" element={<InvoiceSystem />} />
                 <Route path="/ledger" element={<ledger />} />
-
                 <Route path="/it" element={<ITOperations />} />
-                <Route path="/attendance" element={<Attendance />} />
+
+                {/* --- ATTENDANCE ROUTES --- */}
+                <Route path="/employee-attendance" element={<EmployeeAttendance />} />
+                <Route path="/attendance-history" element={<Attendance />} />
+
                 <Route path="/tasks" element={<TaskManagement />} />
                 <Route path="/self-task" element={<SelfAssignedTask />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/recruitment" element={<Recruitment />} />
-                {/* ADDED DM ROUTE */}
-                <Route
-                  path="/digital-marketing"
-                  element={<DigitalMarketing />}
-                />
+
+                {/* --- DIGITAL MARKETING ROUTES --- */}
+                <Route path="/digital-marketing" element={<DigitalMarketing />} />
+                <Route path="/digital-marketing/manager" element={<DigitalManager />} />
+                <Route path="/digital-marketing/executive" element={<DigitalExecutive />} />
+
                 <Route
                   path="/TeamLead"
                   element={
-                    <TeamLeadDashboard
-                      allTasks={[]}
-                      setAllTasks={() => {}}
-                      addNewTask={() => {}}
-                    />
+                    <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />
                   }
                 />
                 <Route path="/logout" element={<Logout />} />

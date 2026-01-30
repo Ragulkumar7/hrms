@@ -8,6 +8,9 @@ import {
   CheckCircle,
   TrendingUp,
   Globe,
+  Zap,
+  PieChart,
+  FileText,
 } from "lucide-react";
 
 const DigitalMarketing = () => {
@@ -25,9 +28,8 @@ const DigitalMarketing = () => {
 
   const handleSubmitToSales = (e) => {
     e.preventDefault();
-    console.log("Lead Handoff details provided to Sales Team:", formData);
     alert(
-      `Lead for ${formData.clientName} has been successfully sent to the Sales Pipeline!`,
+      `Lead for ${formData.clientName} has been successfully sent to the Manager for verification!`,
     );
     setFormData({
       clientName: "",
@@ -39,6 +41,7 @@ const DigitalMarketing = () => {
 
   return (
     <div style={{ padding: "30px", background: "#F9FAFB", minHeight: "100vh" }}>
+      {/* Header Section */}
       <header style={{ marginBottom: "30px" }}>
         <h1 style={{ color: "#1F2937", fontSize: "24px", fontWeight: "700" }}>
           Digital Marketing Workspace
@@ -47,6 +50,65 @@ const DigitalMarketing = () => {
           Lead Generation via Social Media & Search Engine Strategy (SEO/SEM)
         </p>
       </header>
+
+      {/* Top Level Summary Cards */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: "20px",
+          marginBottom: "30px",
+        }}
+      >
+        {[
+          {
+            label: "Total Outreach",
+            value: "1,240",
+            icon: <Zap size={20} />,
+            color: "#7C3AED",
+          },
+          {
+            label: "Interested Leads",
+            value: "84",
+            icon: <Users size={20} />,
+            color: "#10B981",
+          },
+          {
+            label: "Sales Handoffs",
+            value: "32",
+            icon: <TrendingUp size={20} />,
+            color: "#3B82F6",
+          },
+          {
+            label: "Conversion Rate",
+            value: "12%",
+            icon: <PieChart size={20} />,
+            color: "#F59E0B",
+          },
+        ].map((stat, i) => (
+          <div
+            key={i}
+            style={{
+              background: "white",
+              padding: "20px",
+              borderRadius: "16px",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+            }}
+          >
+            <div style={{ color: stat.color, marginBottom: "10px" }}>
+              {stat.icon}
+            </div>
+            <h3 style={{ fontSize: "20px", margin: "0", color: "#1F2937" }}>
+              {stat.value}
+            </h3>
+            <p
+              style={{ fontSize: "12px", color: "#6B7280", margin: "5px 0 0" }}
+            >
+              {stat.label}
+            </p>
+          </div>
+        ))}
+      </div>
 
       {/* Tab Navigation */}
       <div
@@ -77,11 +139,12 @@ const DigitalMarketing = () => {
         ))}
       </div>
 
+      {/* Tab Content */}
       {activeTab === "lead-gen" && (
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+            gridTemplateColumns: "1.5fr 1fr",
             gap: "30px",
           }}
         >
@@ -103,8 +166,7 @@ const DigitalMarketing = () => {
                 color: "#4B5563",
               }}
             >
-              <Send size={20} color="#7C3AED" /> Sales Handoff (Manager &
-              Executive)
+              <Send size={20} color="#7C3AED" /> Social Media Lead Finder
             </h3>
             <form onSubmit={handleSubmitToSales}>
               <div style={{ marginBottom: "15px" }}>
@@ -116,7 +178,7 @@ const DigitalMarketing = () => {
                     fontWeight: "500",
                   }}
                 >
-                  Client / Company Name Found on Social Media
+                  Client / Company Name
                 </label>
                 <input
                   type="text"
@@ -209,12 +271,12 @@ const DigitalMarketing = () => {
                   cursor: "pointer",
                 }}
               >
-                Send Report to Sales Team
+                Submit to Manager Review
               </button>
             </form>
           </div>
 
-          {/* Role Responsibilities Tracker */}
+          {/* Manager's Pending Approvals */}
           <div
             style={{
               background: "white",
@@ -223,41 +285,64 @@ const DigitalMarketing = () => {
               border: "1px solid #E5E7EB",
             }}
           >
-            <h3 style={{ marginBottom: "15px", color: "#4B5563" }}>
-              Role-Based Objectives
-            </h3>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "15px" }}
+            <h3
+              style={{
+                marginBottom: "20px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                color: "#4B5563",
+              }}
             >
+              <FileText size={20} color="#7C3AED" /> Lead Approval Queue
+            </h3>
+            <p
+              style={{
+                fontSize: "12px",
+                color: "#6B7280",
+                marginBottom: "15px",
+              }}
+            >
+              Verification of leads before Sales handoff.
+            </p>
+            <div style={{ borderTop: "1px solid #F3F4F6", paddingTop: "10px" }}>
               <div
                 style={{
-                  padding: "10px",
-                  borderLeft: "4px solid #7C3AED",
-                  background: "#F5F3FF",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "10px 0",
+                  borderBottom: "1px solid #F9FAFB",
                 }}
               >
-                <h4 style={{ fontSize: "14px", margin: "0 0 5px 0" }}>
-                  Digital Manager
-                </h4>
-                <p style={{ fontSize: "12px", margin: 0, color: "#6B7280" }}>
-                  Review client reports and ensure high-quality lead delivery to
-                  Sales Executives.
-                </p>
+                <span style={{ fontSize: "13px" }}>TechFlow Solutions</span>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: "#9333EA",
+                    fontWeight: "700",
+                  }}
+                >
+                  LinkedIn
+                </span>
               </div>
               <div
                 style={{
-                  padding: "10px",
-                  borderLeft: "4px solid #10B981",
-                  background: "#F0FDF4",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "10px 0",
+                  borderBottom: "1px solid #F9FAFB",
                 }}
               >
-                <h4 style={{ fontSize: "14px", margin: "0 0 5px 0" }}>
-                  Digital Executive
-                </h4>
-                <p style={{ fontSize: "12px", margin: 0, color: "#6B7280" }}>
-                  Active outreach on social media platforms to identify
-                  potential business partners.
-                </p>
+                <span style={{ fontSize: "13px" }}>Global Systems</span>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: "#9333EA",
+                    fontWeight: "700",
+                  }}
+                >
+                  Facebook
+                </span>
               </div>
             </div>
           </div>
@@ -268,7 +353,9 @@ const DigitalMarketing = () => {
         <div
           style={{ background: "white", padding: "24px", borderRadius: "16px" }}
         >
-          <h3 style={{ marginBottom: "20px" }}>S.E.O & S.E.M Strategy</h3>
+          <h3 style={{ marginBottom: "20px" }}>
+            S.E.O & S.E.M Strategy Performance
+          </h3>
           <div
             style={{
               display: "grid",
@@ -289,10 +376,10 @@ const DigitalMarketing = () => {
                 style={{ marginBottom: "10px" }}
               />
               <h4 style={{ color: "#7C3AED", margin: "0 0 10px 0" }}>
-                S.E.O Executive
+                Organic SEO
               </h4>
               <p style={{ fontSize: "13px", color: "#6B7280" }}>
-                On-page keyword optimization and technical health audits.
+                Metadata optimization and keyword health audits.
               </p>
             </div>
             <div
@@ -308,10 +395,10 @@ const DigitalMarketing = () => {
                 style={{ marginBottom: "10px" }}
               />
               <h4 style={{ color: "#7C3AED", margin: "0 0 10px 0" }}>
-                S.E.M Management
+                Paid Ads (SEM)
               </h4>
               <p style={{ fontSize: "13px", color: "#6B7280" }}>
-                Running paid search campaigns to increase website traffic.
+                Google Ads performance and budget ROI tracking.
               </p>
             </div>
             <div
@@ -327,10 +414,10 @@ const DigitalMarketing = () => {
                 style={{ marginBottom: "10px" }}
               />
               <h4 style={{ color: "#7C3AED", margin: "0 0 10px 0" }}>
-                Social Media Audit
+                Social Reach
               </h4>
               <p style={{ fontSize: "13px", color: "#6B7280" }}>
-                Tracking client engagement metrics for the Sales team.
+                Engagement metrics across Instagram and LinkedIn.
               </p>
             </div>
           </div>
@@ -341,13 +428,13 @@ const DigitalMarketing = () => {
         <div
           style={{ background: "white", padding: "24px", borderRadius: "16px" }}
         >
-          <h3 style={{ marginBottom: "15px" }}>S.E.O Execute Intern Tasks</h3>
+          <h3 style={{ marginBottom: "15px" }}>Daily "Execute" Checklist</h3>
           <ul style={{ listStyle: "none", padding: 0 }}>
             {[
               "Weekly Search Engine Rank Monitoring",
-              "Identify Potential Clients on Social Media",
-              "Input Lead Details for Sales Team",
-              "Daily SEO Content Optimization Check",
+              "Identifying Client Potential on Social Media",
+              "Lead Details Entry for Sales Executives",
+              "Daily Blog SEO Optimization Check",
             ].map((task, i) => (
               <li
                 key={i}
