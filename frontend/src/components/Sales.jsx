@@ -4,18 +4,23 @@ import {
   Users,
   DollarSign,
   TrendingUp,
-  Plus,
   Download,
-  Briefcase,
   PieChart as ChartIcon,
-  FileText,
   PlusCircle,
-  Target,
   BarChart3,
   MousePointer2,
   ChevronDown,
   Building2,
   AlertTriangle,
+  Calendar,
+  Trash2,
+  RefreshCw,
+  Save,
+  Plus,
+  FileText,
+  CheckCircle2,
+  X,        // For the Cross mark
+  Printer   // For the Print symbol
 } from "lucide-react";
 
 const Sales = () => {
@@ -66,128 +71,498 @@ const Sales = () => {
 
 /* --- 1. PIPELINE & BILLING MODULE --- */
 const SalesBillingModule = () => {
-  const [leads] = useState([
-    {
-      id: 1,
-      client: "Tech Solutions UAE",
-      exec: "Arun",
-      status: "Negotiation",
-      value: 45000,
-    },
-    {
-      id: 2,
-      client: "Kovai Retail",
-      exec: "Sana",
-      status: "Analysis",
-      value: 25000,
-    },
-    {
-      id: 3,
-      client: "London FinTech",
-      exec: "Arun",
-      status: "Closed",
-      value: 85000,
-    },
+  // --- State for the Form ---
+  const [invoiceHeader, setInvoiceHeader] = useState({
+    invoiceNo: "INV-2026-014",
+    client: "",
+    bank: "",
+    date: new Date().toISOString().split("T")[0],
+  });
+
+  const [items, setItems] = useState([
+    { id: 1, desc: "", qty: 1, rate: 0, gstPercent: 18 },
   ]);
 
-  const [invoiceItems, setInvoiceItems] = useState([
-    { id: 1, desc: "Web App Development", qty: 1, rate: 50000 },
-  ]);
-  const subtotal = invoiceItems.reduce(
-    (acc, item) => acc + item.qty * item.rate,
-    0,
-  );
-  const total = subtotal + subtotal * 0.18;
+  const [financials, setFinancials] = useState({
+    discount: 0,
+    paymentTerms: "Payment due within 15 days",
+    notes: "",
+  });
 
-  const updateInvoiceItem = (id, field, value) => {
-    setInvoiceItems(
-      invoiceItems.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item,
-      ),
+  // --- State for Saved Invoices Table ---
+  const [savedInvoices, setSavedInvoices] = useState([
+    { invoiceNo: "INV-2026-013", client: "Tech Solutions", date: "2026-01-28", amount: 11800.00, status: "Paid" }
+  ]);
+
+  // --- Calculations ---
+  const calculateTotals = () => {
+    let subtotal = 0;
+    let totalGst = 0;
+
+    items.forEach((item) => {
+      const lineBase = item.qty * item.rate;
+      const lineGst = lineBase * (item.gstPercent / 100);
+      subtotal += lineBase;
+      totalGst += lineGst;
+    });
+
+    const grandTotal = subtotal + totalGst - Number(financials.discount);
+    return { subtotal, totalGst, grandTotal };
+  };
+
+  const { subtotal, totalGst, grandTotal } = calculateTotals();
+
+  // --- Handlers ---
+  const updateHeader = (field, value) => {
+    setInvoiceHeader((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updateFinancials = (field, value) => {
+    setFinancials((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updateItem = (id, field, value) => {
+    setItems(
+      items.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      )
     );
   };
 
-  return (
-    <div className="sales-admin-view p-4">
-      <div
-        className="split-layout"
-        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
-      >
-        <div className="section-container">
-          <h3 className="section-heading">Active Pipeline</h3>
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th>Client</th>
-                <th>Executive</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leads.map((lead) => (
-                <tr key={lead.id}>
-                  <td>{lead.client}</td>
-                  <td>{lead.exec}</td>
-                  <td>₹{lead.value.toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+  const addItem = () => {
+    setItems([
+      ...items,
+      {
+        id: Date.now(),
+        desc: "",
+        qty: 1,
+        rate: 0,
+        gstPercent: 18,
+      },
+    ]);
+  };
 
-        <div className="section-container">
-          <h3 className="section-heading">Invoice Generator</h3>
-          <div
-            className="invoice-box"
-            style={{
-              background: "#f8fafc",
-              padding: "15px",
-              borderRadius: "8px",
-            }}
+  const removeItem = (id) => {
+    if (items.length > 1) {
+      setItems(items.filter((item) => item.id !== id));
+    }
+  };
+
+  const handleSaveInvoice = () => {
+    if (!invoiceHeader.client) {
+      alert("Please select a client.");
+      return;
+    }
+
+    const newInvoice = {
+      invoiceNo: invoiceHeader.invoiceNo,
+      client: invoiceHeader.client,
+      date: invoiceHeader.date,
+      amount: grandTotal,
+      status: "Pending"
+    };
+
+    setSavedInvoices([newInvoice, ...savedInvoices]);
+    alert("Invoice saved successfully!");
+    
+    // Auto-increment invoice number
+    const currentNum = parseInt(invoiceHeader.invoiceNo.split('-')[2]);
+    setInvoiceHeader(prev => ({ ...prev, invoiceNo: `INV-2026-0${currentNum + 1}` }));
+  };
+
+  // --- Styles ---
+  const labelStyle = {
+    display: "block",
+    fontSize: "11px",
+    fontWeight: "600",
+    color: "#64748b",
+    marginBottom: "6px",
+    textTransform: "uppercase",
+  };
+
+  const inputStyle = {
+    width: "100%",
+    padding: "10px 12px",
+    borderRadius: "6px",
+    border: "1px solid #e2e8f0",
+    fontSize: "13px",
+    outline: "none",
+    color: "#334155",
+  };
+
+  return (
+    <div className="p-4" style={{ background: "#fff", borderRadius: "12px" }}>
+      {/* --- Top Inputs Grid --- */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: "20px",
+          marginBottom: "30px",
+        }}
+      >
+        <div>
+          <label style={labelStyle}>Invoice Number</label>
+          <input
+            style={inputStyle}
+            value={invoiceHeader.invoiceNo}
+            onChange={(e) => updateHeader("invoiceNo", e.target.value)}
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>Client Name</label>
+          <select
+            style={inputStyle}
+            value={invoiceHeader.client}
+            onChange={(e) => updateHeader("client", e.target.value)}
           >
-            {invoiceItems.map((item) => (
-              <div
-                className="invoice-row mb-2"
-                key={item.id}
-                style={{ display: "flex", gap: "10px" }}
-              >
-                <input
-                  className="standard-input"
-                  placeholder="Service"
-                  value={item.desc}
-                  onChange={(e) =>
-                    updateInvoiceItem(item.id, "desc", e.target.value)
-                  }
-                  style={{ flex: 2 }}
-                />
-                <input
-                  className="standard-input"
-                  type="number"
-                  value={item.rate}
-                  onChange={(e) =>
-                    updateInvoiceItem(item.id, "rate", e.target.value)
-                  }
-                  style={{ width: "100px" }}
-                />
-              </div>
-            ))}
-            <div
-              className="summary"
-              style={{
-                borderTop: "1px solid #ddd",
-                marginTop: "10px",
-                paddingTop: "10px",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span>Total (+18% GST):</span> <b>₹{total.toLocaleString()}</b>
-              </div>
-              <button className="btn-action full-width mt-2">
-                <Download size={16} /> Download Invoice
-              </button>
-            </div>
+            <option value="">Select Client</option>
+            <option value="Global Corp">Global Corp</option>
+            <option value="Tech Solutions">Tech Solutions</option>
+            <option value="Shruthi Inc">Shruthi Inc</option>
+          </select>
+        </div>
+        <div>
+          <label style={labelStyle}>Receiving Bank</label>
+          <input
+            style={inputStyle}
+            placeholder="Select or Type Bank"
+            value={invoiceHeader.bank}
+            onChange={(e) => updateHeader("bank", e.target.value)}
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>Invoice Date</label>
+          <div style={{ position: "relative" }}>
+            <input
+              type="date"
+              style={inputStyle}
+              value={invoiceHeader.date}
+              onChange={(e) => updateHeader("date", e.target.value)}
+            />
           </div>
         </div>
+      </div>
+
+      {/* --- Invoice Items Header --- */}
+      <div style={{ marginBottom: "15px" }}>
+        <h3
+          style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b" }}
+        >
+          Invoice Items
+        </h3>
+      </div>
+
+      {/* --- Items Table Header --- */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "40px 3fr 1fr 1.5fr 1fr 1.5fr 1.5fr 40px",
+          gap: "10px",
+          background: "#f8fafc",
+          padding: "10px 10px",
+          borderRadius: "6px",
+          marginBottom: "10px",
+        }}
+      >
+        <span style={labelStyle}>S.No</span>
+        <span style={labelStyle}>Description / Particulars</span>
+        <span style={labelStyle}>Qty</span>
+        <span style={labelStyle}>Rate</span>
+        <span style={labelStyle}>GST %</span>
+        <span style={labelStyle}>GST Amt</span>
+        <span style={labelStyle}>Total</span>
+        <span></span>
+      </div>
+
+      {/* --- Items Rows --- */}
+      {items.map((item, index) => {
+        const gstAmount = (item.qty * item.rate * item.gstPercent) / 100;
+        const lineTotal = item.qty * item.rate + gstAmount;
+
+        return (
+          <div
+            key={item.id}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "40px 3fr 1fr 1.5fr 1fr 1.5fr 1.5fr 40px",
+              gap: "10px",
+              alignItems: "center",
+              marginBottom: "10px",
+            }}
+          >
+            <span style={{ fontSize: "13px", color: "#64748b" }}>
+              {index + 1}
+            </span>
+            <input
+              style={inputStyle}
+              placeholder="Item description"
+              value={item.desc}
+              onChange={(e) => updateItem(item.id, "desc", e.target.value)}
+            />
+            <input
+              style={inputStyle}
+              type="number"
+              value={item.qty}
+              onChange={(e) => updateItem(item.id, "qty", Number(e.target.value))}
+            />
+            <input
+              style={inputStyle}
+              type="number"
+              placeholder="0.00"
+              value={item.rate}
+              onChange={(e) => updateItem(item.id, "rate", Number(e.target.value))}
+            />
+            <input
+              style={inputStyle}
+              type="number"
+              value={item.gstPercent}
+              onChange={(e) => updateItem(item.id, "gstPercent", Number(e.target.value))}
+            />
+            <input
+              style={{ ...inputStyle, background: "#f1f5f9", cursor: "not-allowed" }}
+              disabled
+              value={gstAmount.toFixed(2)}
+            />
+            <input
+              style={{ ...inputStyle, background: "#f1f5f9", cursor: "not-allowed" }}
+              disabled
+              value={lineTotal.toFixed(2)}
+            />
+            
+            {/* UPDATED: Red Cross Mark Button (No background box) */}
+            <button
+              onClick={() => removeItem(item.id)}
+              style={{
+                border: "none",
+                background: "transparent", 
+                color: "#ef4444", // Red color for the icon
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                padding: "8px"
+              }}
+              title="Remove Item"
+            >
+              <X size={20} strokeWidth={2.5} />
+            </button>
+          </div>
+        );
+      })}
+
+      {/* --- Add Button --- */}
+      <button
+        onClick={addItem}
+        style={{
+          background: "#10b981",
+          color: "white",
+          border: "none",
+          padding: "8px 16px",
+          borderRadius: "6px",
+          fontSize: "13px",
+          fontWeight: "500",
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          cursor: "pointer",
+          marginTop: "10px",
+        }}
+      >
+        <Plus size={16} /> Add Item
+      </button>
+
+      {/* --- Footer / Calculations Section --- */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1.5fr 1fr",
+          gap: "40px",
+          marginTop: "40px",
+        }}
+      >
+        {/* Left: Notes & Terms */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <div>
+            <label style={labelStyle}>Payment Terms</label>
+            <textarea
+              style={{ ...inputStyle, resize: "vertical", minHeight: "60px" }}
+              value={financials.paymentTerms}
+              onChange={(e) => updateFinancials("paymentTerms", e.target.value)}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Notes</label>
+            <textarea
+              style={{ ...inputStyle, resize: "vertical", minHeight: "60px" }}
+              placeholder="Additional notes or instructions"
+              value={financials.notes}
+              onChange={(e) => updateFinancials("notes", e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Right: Totals Card */}
+        <div
+          style={{
+            background: "#f8fafc",
+            padding: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginBottom: "10px",
+              fontSize: "13px",
+            }}
+          >
+            <span>Subtotal:</span>
+            <span style={{ fontWeight: "600" }}>₹{subtotal.toFixed(2)}</span>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "10px",
+              fontSize: "13px",
+            }}
+          >
+            <span>Discount:</span>
+            <input
+              type="number"
+              style={{
+                width: "100px",
+                padding: "6px",
+                borderRadius: "4px",
+                border: "1px solid #cbd5e1",
+                textAlign: "right",
+              }}
+              value={financials.discount}
+              onChange={(e) =>
+                updateFinancials("discount", Number(e.target.value))
+              }
+            />
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginBottom: "15px",
+              fontSize: "13px",
+              paddingBottom: "15px",
+              borderBottom: "1px solid #cbd5e1",
+            }}
+          >
+            <span>Total GST:</span>
+            <span style={{ fontWeight: "600" }}>₹{totalGst.toFixed(2)}</span>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: "16px",
+              fontWeight: "700",
+              color: "#1e293b",
+            }}
+          >
+            <span>Grand Total:</span>
+            <span>₹{grandTotal.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* --- Action Buttons --- */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: "10px",
+          marginTop: "30px",
+          paddingTop: "20px",
+          borderTop: "1px solid #e2e8f0",
+        }}
+      >
+        <button
+          style={{
+            padding: "10px 20px",
+            background: "#f1f5f9",
+            color: "#475569",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "500",
+            cursor: "pointer",
+          }}
+        >
+          Reset
+        </button>
+        <button
+          onClick={handleSaveInvoice}
+          style={{
+            padding: "10px 24px",
+            background: "#1e1b4b", // Dark blue
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "500",
+            cursor: "pointer",
+          }}
+        >
+          Save Invoice
+        </button>
+      </div>
+
+      {/* --- SAVED INVOICES TABLE --- */}
+      <div style={{ marginTop: "40px" }}>
+        <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b", marginBottom: "15px", display: "flex", alignItems: "center", gap: "8px" }}>
+          <FileText size={18} /> Recently Saved Invoices
+        </h3>
+        
+        <table className="custom-table" style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+                <tr style={{ background: "#f8fafc", textAlign: "left" }}>
+                    <th style={{ padding: "12px", fontSize: "12px", color: "#64748b" }}>Invoice #</th>
+                    <th style={{ padding: "12px", fontSize: "12px", color: "#64748b" }}>Date</th>
+                    <th style={{ padding: "12px", fontSize: "12px", color: "#64748b" }}>Client</th>
+                    <th style={{ padding: "12px", fontSize: "12px", color: "#64748b" }}>Amount</th>
+                    <th style={{ padding: "12px", fontSize: "12px", color: "#64748b" }}>Status</th>
+                    <th style={{ padding: "12px", fontSize: "12px", color: "#64748b" }}>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {savedInvoices.map((inv, idx) => (
+                    <tr key={idx} style={{ borderBottom: "1px solid #e2e8f0" }}>
+                        <td style={{ padding: "12px", fontSize: "13px", fontWeight: "500" }}>{inv.invoiceNo}</td>
+                        <td style={{ padding: "12px", fontSize: "13px", color: "#64748b" }}>{inv.date}</td>
+                        <td style={{ padding: "12px", fontSize: "13px" }}>{inv.client}</td>
+                        <td style={{ padding: "12px", fontSize: "13px", fontWeight: "600" }}>₹{inv.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                        <td style={{ padding: "12px" }}>
+                            <span style={{ 
+                                fontSize: "11px", 
+                                padding: "3px 8px", 
+                                borderRadius: "12px", 
+                                background: inv.status === "Paid" ? "#dcfce7" : "#fff7ed",
+                                color: inv.status === "Paid" ? "#166534" : "#c2410c",
+                                fontWeight: "500"
+                            }}>
+                                {inv.status}
+                            </span>
+                        </td>
+                         <td style={{ padding: "12px" }}>
+                            <button style={{ background: "none", border: "none", cursor: "pointer", color: "#3b82f6" }}>
+                                {/* UPDATED: Replaced Download with Printer symbol */}
+                                <Printer size={18} />
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
       </div>
     </div>
   );
@@ -288,8 +663,8 @@ const SalesExecutiveModule = () => {
   const updateStatus = (id, newStatus) => {
     setAssignments(
       assignments.map((item) =>
-        item.id === id ? { ...item, status: newStatus } : item,
-      ),
+        item.id === id ? { ...item, status: newStatus } : item
+      )
     );
   };
 
