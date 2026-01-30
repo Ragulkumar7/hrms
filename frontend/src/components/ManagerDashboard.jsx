@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useUser } from '../context/UserContext'; 
 import { 
   Users, UserMinus, ArrowRightLeft, Lock, ChevronDown, ChevronRight, 
-  Gift, UserPlus, AlertTriangle, FileWarning, CheckCircle, X
+  Gift, UserPlus, AlertTriangle, FileWarning, CheckCircle, X, ArrowUpRight, 
+  MapPin, Briefcase, Smartphone, Search, Edit2, Check
 } from 'lucide-react';
 
 const ManagerDashboard = () => {
@@ -31,101 +32,94 @@ const ManagerDashboard = () => {
   ]);
 
   // 3. Automated Wishes Data
-  const upcomingEvents = [
-    { id: 1, name: 'Varshith', type: 'Birthday', date: 'Today', status: 'Auto-Sent' },
-    { id: 2, name: 'Sarah (TL)', type: 'Work Anniversary', date: 'Tomorrow', status: 'Scheduled' }
-  ];
+  const [events, setEvents] = useState([
+    { 
+      id: 1, name: 'Varshith', type: 'Birthday', role: 'Software Developer',
+      location: 'Coimbatore Office', date: '30-Jan-2026', status: 'Auto-Sent', phone: '+91 98765 43210'
+    },
+    { 
+      id: 2, name: 'Sarah (TL)', type: 'Work Anniversary', role: 'Team Lead',
+      location: 'Remote', date: '31-Jan-2026', status: 'Scheduled', phone: '+91 98989 12345'
+    }
+  ]);
 
-  // State for UI
+  // UI States
   const [expandedTL, setExpandedTL] = useState(null);
-  const [shuffleModal, setShuffleModal] = useState(null); // Stores the employee being shuffled
+  const [wishSearch, setWishSearch] = useState("");
+  const [editingEfficiency, setEditingEfficiency] = useState(null); // Tracks {tlId, empId}
 
   // --- ACTIONS ---
 
-  // 1. Assign New Hire to a TL
-  const handleAssign = (empId, tlId) => {
-    if (!tlId) return;
-    const employee = unassigned.find(e => e.id === empId);
-    
+  // Update Efficiency Logic
+  const handleEfficiencyChange = (tlId, empId, newValue) => {
+    const val = Math.min(100, Math.max(0, parseInt(newValue) || 0));
     setTeamData(teamData.map(tl => {
       if (tl.id === tlId) {
-        return { ...tl, members: [...tl.members, { ...employee, efficiency: 100, status: 'Active' }] };
+        return {
+          ...tl,
+          members: tl.members.map(m => m.id === empId ? { ...m, efficiency: val } : m)
+        };
       }
       return tl;
     }));
-    setUnassigned(unassigned.filter(e => e.id !== empId));
   };
 
-  // 2. Put Paper Logic
-  const handlePutPaper = (tlId, empId) => {
-    if (window.confirm("Low Performance detected. Initiate 'Put Paper' (Notice Period) protocol?")) {
-      setTeamData(teamData.map(tl => {
-        if (tl.id === tlId) {
-          return {
-            ...tl,
-            members: tl.members.map(m => m.id === empId ? { ...m, status: 'Notice Period', efficiency: 0 } : m)
-          };
-        }
-        return tl;
-      }));
-    }
-  };
-
-  // 3. SHUFFLE TEAM LOGIC (The Fix)
-  const executeShuffle = (newTlId) => {
-    if (!shuffleModal || !newTlId || newTlId === shuffleModal.currentTlId) return;
-
-    const { empId, currentTlId } = shuffleModal;
-
-    // A. Find the employee object
+  const handleSwapTeam = (empId, currentTlId, newTlId) => {
+    if (!newTlId || currentTlId === newTlId) return;
     const sourceTL = teamData.find(t => t.id === currentTlId);
     const employeeToMove = sourceTL.members.find(m => m.id === empId);
-
-    // B. Create new data structure
     const updatedTeams = teamData.map(tl => {
-      // Remove from old TL
-      if (tl.id === currentTlId) {
-        return { ...tl, members: tl.members.filter(m => m.id !== empId) };
-      }
-      // Add to new TL
-      if (tl.id === newTlId) {
-        return { ...tl, members: [...tl.members, employeeToMove] };
-      }
+      if (tl.id === currentTlId) return { ...tl, members: tl.members.filter(m => m.id !== empId) };
+      if (tl.id === newTlId) return { ...tl, members: [...tl.members, employeeToMove] };
       return tl;
     });
-
     setTeamData(updatedTeams);
-    setShuffleModal(null); // Close Modal
+    setExpandedTL(newTlId); 
   };
 
-  // Filter View based on Role
-  const visibleTeams = user.role === 'TL' 
-    ? teamData.filter(tl => tl.id === 'TL-01') 
-    : teamData; 
+  const handleAssign = (empId, tlId) => {
+    if (!tlId) return;
+    const employee = unassigned.find(e => e.id === empId);
+    setTeamData(teamData.map(tl => {
+      if (tl.id === tlId) return { ...tl, members: [...tl.members, { ...employee, efficiency: 100, status: 'Active' }] };
+      return tl;
+    }));
+    setUnassigned(unassigned.filter(e => e.id !== empId));
+    setExpandedTL(tlId);
+  };
+
+  const filteredEvents = events.filter(event => 
+    event.name.toLowerCase().includes(wishSearch.toLowerCase())
+  );
+
+  const visibleTeams = user.role === 'TL' ? teamData.filter(tl => tl.id === 'TL-01') : teamData;
 
   return (
-    <div>
-      <div className="page-header">
-        <div>
-          <h2 className="main-title">{user.role === 'Manager' ? 'Global Manager Portal' : 'Team Lead Dashboard'}</h2>
-          <p className="sub-title">Performance, Allocations & Automation</p>
-        </div>
+    <div style={{padding: '30px', backgroundColor: '#f8fafc', minHeight: '100vh', fontFamily: 'Inter, sans-serif'}}>
+      <div style={{marginBottom: '25px'}}>
+        <h2 style={{fontSize: '24px', fontWeight: '800', color: '#1e293b', margin: 0}}>Global Manager Portal</h2>
+        <p style={{color: '#64748b', fontSize: '14px', marginTop: '4px'}}>Performance, Allocations & Automation</p>
       </div>
 
-      {/* AUTOMATED WISHES */}
-      <div className="glass-card" style={{background: 'linear-gradient(to right, #fff, #fefce8)'}}>
-        <div className="section-header" style={{border: 'none', marginBottom: '10px'}}>
-          <h4 style={{color: '#d97706'}}><Gift size={18} /> Automated Wishes & Events</h4>
-          <span className="badge-cfo" style={{background:'#fff', border:'1px solid #fcd34d'}}>System Active</span>
+      {/* --- AUTOMATED WISHES & EVENTS --- */}
+      <div style={{ background: '#fffdf5', border: '1px solid #fde68a', borderRadius: '16px', padding: '24px', marginBottom: '25px' }}>
+        <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px'}}>
+          <Gift size={20} color="#d97706" />
+          <h4 style={{margin: 0, color: '#d97706', fontSize: '17px', fontWeight: '700'}}>Automated Wishes & Events</h4>
         </div>
-        <div style={{display:'flex', gap:'20px'}}>
-          {upcomingEvents.map(event => (
-            <div key={event.id} style={{display:'flex', alignItems:'center', gap:'10px', fontSize:'13px', background:'white', padding:'8px 12px', borderRadius:'8px', border:'1px solid #fde68a'}}>
-              <div className="avatar-small" style={{background:'#fef3c7', color:'#d97706'}}>{event.name[0]}</div>
-              <div>
-                <strong>{event.name}</strong> • {event.type} ({event.date})
-                <div style={{color:'#16a34a', fontSize:'11px', display:'flex', alignItems:'center', gap:'4px'}}>
-                   <CheckCircle size={10}/> {event.status}
+        <div style={{position: 'relative', width: '320px', marginBottom: '20px'}}>
+          <Search size={16} color="#d97706" style={{position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)'}}/>
+          <input type="text" placeholder="Search employee..." value={wishSearch} onChange={(e) => setWishSearch(e.target.value)} style={{width: '100%', padding: '10px 10px 10px 40px', borderRadius: '8px', border: '1px solid #fde68a', outline: 'none'}} />
+        </div>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px'}}>
+          {filteredEvents.map(event => (
+            <div key={event.id} style={{background: 'white', padding: '16px', borderRadius: '12px', border: '1px solid #fef3c7', display: 'flex', gap: '15px'}}>
+              <div style={{width: '40px', height: '40px', borderRadius: '50%', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800'}}>{event.name[0]}</div>
+              <div style={{flex: 1}}>
+                <div style={{display: 'flex', justifyContent: 'space-between'}}><strong style={{fontSize: '14px'}}>{event.name}</strong></div>
+                <div style={{fontSize: '12px', color: '#64748b', marginTop: '4px'}}>
+                  <div><Briefcase size={12}/> {event.role}</div>
+                  <div style={{fontWeight: '700', color: '#1e293b'}}>📅 {event.date}</div>
                 </div>
               </div>
             </div>
@@ -133,150 +127,88 @@ const ManagerDashboard = () => {
         </div>
       </div>
 
-      {/* NEW HIRES POOL */}
+      {/* --- NEW HIRES --- */}
       {user.role === 'Manager' && unassigned.length > 0 && (
-        <div className="glass-card" style={{border:'1px dashed #2563eb'}}>
-          <div className="section-header">
-            <h4 style={{color: '#2563eb'}}><UserPlus size={18} /> New Hires (From HR)</h4>
-            <span style={{fontSize:'12px', color:'#64748b'}}>Assign to a Team Lead</span>
-          </div>
+        <div style={{background: 'white', borderRadius: '12px', padding: '20px', border: '1px dashed #2563eb', marginBottom: '25px'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px'}}><UserPlus size={18} color="#2563eb" /><h4 style={{margin: 0, color: '#2563eb'}}>New Hires (From HR)</h4></div>
           {unassigned.map(emp => (
-            <div key={emp.id} style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px', background:'#eff6ff', borderRadius:'6px'}}>
-              <div>
-                <strong>{emp.name}</strong> <span style={{fontSize:'12px', color:'#64748b'}}>({emp.role})</span>
-                <span style={{marginLeft:'10px', fontSize:'11px', background:'white', padding:'2px 6px', borderRadius:'4px'}}>Joined: {emp.joined}</span>
-              </div>
-              <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-                <span style={{fontSize:'12px'}}>Assign to:</span>
-                <select 
-                  className="admin-input" 
-                  style={{padding:'5px'}}
-                  onChange={(e) => handleAssign(emp.id, e.target.value)}
-                  defaultValue=""
-                >
-                  <option value="" disabled>Select TL...</option>
-                  {teamData.map(tl => <option key={tl.id} value={tl.id}>{tl.name}</option>)}
-                </select>
-              </div>
+            <div key={emp.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#eff6ff', padding: '12px', borderRadius: '8px', marginBottom: '8px'}}>
+              <span style={{fontWeight: '600'}}>{emp.name} <small>({emp.role})</small></span>
+              <select style={{padding: '5px', borderRadius: '6px', fontSize: '12px'}} onChange={(e) => handleAssign(emp.id, e.target.value)} defaultValue=""><option value="" disabled>Assign TL...</option>{teamData.map(tl => <option key={tl.id} value={tl.id}>{tl.name}</option>)}</select>
             </div>
           ))}
         </div>
       )}
 
-      {/* TEAM HIERARCHY */}
-      <div className="glass-card">
-        <div className="section-header">
-          <h4><Users size={18} /> Team Structure & Efficiency</h4>
-        </div>
-
+      {/* --- TEAM STRUCTURE --- */}
+      <div style={{background: 'white', borderRadius: '16px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px'}}><Users size={18}/><h4 style={{margin: 0}}>Team Structure & Efficiency</h4></div>
         {visibleTeams.map(tl => (
-          <div key={tl.id} style={{marginBottom:'20px', border:'1px solid #eee', borderRadius:'8px', overflow:'hidden'}}>
-            
-            {/* TL Header */}
-            <div 
-              onClick={() => setExpandedTL(expandedTL === tl.id ? null : tl.id)}
-              style={{padding:'15px', background:'#f8fafc', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center'}}
-            >
-              <div style={{fontWeight:'bold'}}>{tl.name} <span style={{fontSize:'12px', color:'#666'}}>({tl.members.length} Members)</span></div>
-              {expandedTL === tl.id ? <ChevronDown size={16}/> : <ChevronRight size={16}/>}
+          <div key={tl.id} style={{marginBottom: '10px', border: '1px solid #f1f5f9', borderRadius: '12px'}}>
+            <div onClick={() => setExpandedTL(expandedTL === tl.id ? null : tl.id)} style={{padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer'}}>
+              <span style={{fontWeight: '700'}}>{tl.name} <small>({tl.members.length} Members)</small></span>
+              {expandedTL === tl.id ? <ChevronDown size={18}/> : <ChevronRight size={18}/>}
             </div>
-            
-            {/* Members Table */}
             {expandedTL === tl.id && (
-              <table className="custom-table" style={{borderTop:'1px solid #eee'}}>
-                <thead>
-                  <tr><th>Employee</th><th>Efficiency %</th><th>Status</th><th>Manager Action</th></tr>
-                </thead>
-                <tbody>
-                  {tl.members.map(emp => (
-                    <tr key={emp.id} style={{background: emp.status === 'Notice Period' ? '#fff1f2' : 'transparent'}}>
-                      <td>{emp.name}<br/><span style={{fontSize:'11px', color:'#888'}}>{emp.role}</span></td>
-                      
-                      {/* Efficiency */}
-                      <td>
-                        <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-                           <div style={{width:'100px', height:'6px', background:'#eee', borderRadius:'4px'}}>
-                             <div style={{width: `${emp.efficiency}%`, height:'100%', background: emp.efficiency < 50 ? '#dc2626' : '#16a34a'}}></div>
-                           </div>
-                           <span style={{fontSize:'11px', fontWeight:'bold', color: emp.efficiency < 50 ? '#dc2626' : '#16a34a'}}>
-                             {emp.efficiency}%
-                           </span>
-                        </div>
-                        {emp.efficiency < 50 && emp.status === 'Active' && (
-                          <span style={{fontSize:'10px', color:'#dc2626', display:'flex', alignItems:'center', gap:'3px', marginTop:'3px'}}>
-                            <AlertTriangle size={10}/> Low Efficiency
-                          </span>
-                        )}
-                      </td>
-
-                      <td><span className={`status-pill ${emp.status === 'Active' ? 'active' : 'rejected'}`}>{emp.status}</span></td>
-
-                      {/* ACTIONS */}
-                      <td>
-                        {user.role === 'Manager' ? (
-                          <div style={{display:'flex', gap:'10px'}}>
-                             {/* SHUFFLE BUTTON - Triggers Modal */}
-                             <button 
-                               className="icon-btn-check" 
-                               title="Shuffle Team"
-                               onClick={() => setShuffleModal({ empId: emp.id, currentTlId: tl.id, name: emp.name })}
-                             >
-                               <ArrowRightLeft size={16}/>
-                             </button>
-                             
-                             {/* PUT PAPER BUTTON */}
-                             {emp.status === 'Active' && (
-                               <button 
-                                 className="icon-btn-x" 
-                                 style={{color:'#dc2626', border:'1px solid #dc2626', padding:'4px 8px', borderRadius:'4px', display:'flex', gap:'5px', alignItems:'center'}}
-                                 onClick={() => handlePutPaper(tl.id, emp.id)}
-                               >
-                                 <FileWarning size={14}/> Put Paper
-                               </button>
-                             )}
-                          </div>
-                        ) : (
-                          <span style={{display:'flex', alignItems:'center', gap:'5px', color:'#94a3b8', fontSize:'12px'}}><Lock size={12}/> Locked</span>
-                        )}
-                      </td>
+              <div style={{padding: '0 16px 16px'}}>
+                <table style={{width: '100%', borderCollapse: 'collapse'}}>
+                  <thead style={{textAlign: 'left', fontSize: '11px', color: '#64748b', borderBottom: '1px solid #f1f5f9'}}>
+                    <tr>
+                      <th style={{padding: '10px'}}>Employee</th>
+                      <th style={{padding: '10px'}}>Efficiency %</th>
+                      <th style={{padding: '10px'}}>Status</th>
+                      <th style={{padding: '10px'}}>Action</th>
+                      <th style={{padding: '10px'}}>Swap Team</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {tl.members.map(emp => (
+                      <tr key={emp.id} style={{borderBottom: '1px solid #f8fafc'}}>
+                        <td style={{padding: '12px 10px'}}><div style={{fontWeight: '600'}}>{emp.name}</div><div style={{fontSize: '11px'}}>{emp.role}</div></td>
+                        <td style={{padding: '12px 10px'}}>
+                          {editingEfficiency?.empId === emp.id ? (
+                            <input 
+                              type="number" 
+                              value={emp.efficiency} 
+                              onChange={(e) => handleEfficiencyChange(tl.id, emp.id, e.target.value)}
+                              style={{width: '60px', padding: '4px', borderRadius: '4px', border: '1px solid #3b82f6'}}
+                            />
+                          ) : (
+                            <>
+                              <div style={{width: '60px', height: '4px', background: '#f1f5f9', borderRadius: '10px'}}><div style={{width: `${emp.efficiency}%`, height: '100%', background: '#22c55e', borderRadius: '10px'}}/></div>
+                              <span style={{fontSize: '11px'}}>{emp.efficiency}%</span>
+                            </>
+                          )}
+                        </td>
+                        <td style={{padding: '12px 10px'}}><span style={{fontSize: '10px', background: '#dcfce7', color: '#166534', padding: '2px 6px', borderRadius: '4px'}}>{emp.status}</span></td>
+                        
+                        {/* --- ACTION BUTTON: TOGGLES EDIT MODE --- */}
+                        <td style={{padding: '12px 10px'}}>
+                          <button 
+                            onClick={() => setEditingEfficiency(editingEfficiency?.empId === emp.id ? null : { tlId: tl.id, empId: emp.id })}
+                            style={{border: 'none', background: editingEfficiency?.empId === emp.id ? '#dcfce7' : '#f1f5f9', padding: '6px', borderRadius: '6px', cursor: 'pointer'}}
+                          >
+                            {editingEfficiency?.empId === emp.id ? <Check size={14} color="#166534"/> : <Edit2 size={14}/>}
+                          </button>
+                        </td>
+
+                        <td style={{padding: '12px 10px'}}>
+                          {user.role === 'Manager' && (
+                            <select style={{fontSize: '11px', padding: '4px', borderRadius: '4px', border: '1px solid #e2e8f0'}} onChange={(e) => handleSwapTeam(emp.id, tl.id, e.target.value)} defaultValue="">
+                              <option value="" disabled>Switch to...</option>
+                              {teamData.filter(target => target.id !== tl.id).map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
+                            </select>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         ))}
       </div>
-
-      {/* --- SHUFFLE MODAL POPUP --- */}
-      {shuffleModal && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-          background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200
-        }}>
-          <div className="glass-card" style={{width:'350px', margin:0, padding:'20px'}}>
-             <div className="section-header">
-                <h4>Move {shuffleModal.name}?</h4>
-                <button className="icon-btn-x" onClick={() => setShuffleModal(null)}><X size={18}/></button>
-             </div>
-             <p style={{fontSize:'13px', color:'#666', marginBottom:'15px'}}>Select the new Team Lead for this employee.</p>
-             
-             <div style={{display:'flex', flexDirection:'column', gap:'10px'}}>
-                {teamData.filter(t => t.id !== shuffleModal.currentTlId).map(tl => (
-                  <button 
-                    key={tl.id} 
-                    className="btn-secondary"
-                    style={{justifyContent:'space-between'}}
-                    onClick={() => executeShuffle(tl.id)}
-                  >
-                    <span>{tl.name}</span>
-                    <ArrowRightLeft size={14}/>
-                  </button>
-                ))}
-             </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
