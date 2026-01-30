@@ -1,95 +1,284 @@
-import React, { useState } from 'react';
-import { ShoppingCart, Plus, Save } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 
 const PurchaseOrder = () => {
+  const navigate = useNavigate();
+
+  // --- STATE ---
   const [po, setPo] = useState({
-    vendor: '',
-    poNumber: `PO-2026-00${Math.floor(Math.random()*90)+10}`,
+    poNumber: `PO-IT-2026-${Math.floor(100 + Math.random() * 900)}`,
     date: new Date().toISOString().split('T')[0],
-    deliveryDate: '',
-    items: [{ id: 1, desc: '', qty: 1, rate: 0 }]
+    type: 'Accounting', // Accounting Type
+    
+    // Vendor Details
+    vendorName: '',
+    contactNumber: '',
+    emailAddress: '',
+    gstNumber: '',
+    bankName: '',
+    address: '',
+    
+    // Items
+    items: [{ id: 1, desc: '', hsn: '', qty: 1, unit: 'Nos', rate: 0 }],
+    
+    // Totals
+    freight: 0,
+    paidAmount: 0,
+    notes: ''
   });
 
-  const [dateError, setDateError] = useState("");
+  // --- CALCULATIONS ---
+  const calculateTotals = () => {
+    const netTotal = po.items.reduce((sum, item) => sum + (item.qty * item.rate), 0);
+    const freight = Number(po.freight) || 0;
+    const grandTotal = netTotal + freight;
+    const paid = Number(po.paidAmount) || 0;
+    const balance = grandTotal - paid;
+    return { netTotal, grandTotal, balance };
+  };
 
-  const handleDateCheck = (val) => {
-    const selected = new Date(val);
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    if (selected < today) {
-      setDateError("Delivery date cannot be in the past!");
-    } else {
-      setDateError("");
-      setPo({...po, deliveryDate: val});
+  const totals = calculateTotals();
+
+  // --- HANDLERS ---
+  const handleInputChange = (field, value) => {
+    setPo({ ...po, [field]: value });
+  };
+
+  const handleItemChange = (index, field, value) => {
+    const newItems = [...po.items];
+    newItems[index][field] = value;
+    setPo({ ...po, items: newItems });
+  };
+
+  const addItem = () => {
+    setPo({
+      ...po,
+      items: [...po.items, { id: Date.now(), desc: '', hsn: '', qty: 1, unit: 'Nos', rate: 0 }]
+    });
+  };
+
+  const removeItem = (index) => {
+    if (po.items.length > 1) {
+      const newItems = po.items.filter((_, i) => i !== index);
+      setPo({ ...po, items: newItems });
     }
   };
 
-  const grandTotal = po.items.reduce((sum, item) => sum + (item.qty * item.rate), 0);
+  const handleSave = () => {
+    if (!po.vendorName) return alert("Vendor Name is required!");
+
+    const newRecord = {
+      ...po,
+      id: po.poNumber,      // For list view compatibility
+      vendor: po.vendorName,// For list view compatibility
+      amount: totals.grandTotal,
+      status: 'Pending'
+    };
+
+    const existing = JSON.parse(localStorage.getItem('account_pos') || "[]");
+    localStorage.setItem('account_pos', JSON.stringify([newRecord, ...existing]));
+
+    alert("Purchase Order Saved Successfully!");
+    navigate('/payroll');
+  };
+
+  // --- STYLES ---
+  const labelStyle = { fontSize: '13px', fontWeight: '600', color: '#1e293b', marginBottom: '6px', display: 'block' };
+  const inputStyle = { width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', fontSize: '14px', color: '#334155', boxSizing: 'border-box' };
+  const sectionHeaderStyle = { fontSize: '16px', fontWeight: '700', color: '#1e1b4b', marginBottom: '15px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', marginTop: '25px' };
 
   return (
-    <div style={{ background: 'white', padding: '40px', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
-      <div style={{ background: '#1e1b4b', color: 'white', padding: '30px', borderRadius: '16px', marginBottom: '35px', display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-          <ShoppingCart style={{ color: '#FF9B44' }}/>
-          <h2 style={{ margin: 0, fontSize: '22px' }}>New Purchase Order</h2>
-        </div>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '18px', fontWeight: '800', color: '#FF9B44' }}>{po.poNumber}</div>
-        </div>
-      </div>
+    <div className="fade-in" style={{ padding: '20px', maxWidth: '1100px', margin: '0 auto', fontFamily: 'Inter, sans-serif' }}>
+      
+      {/* Back Button */}
+      <button onClick={() => navigate('/payroll')} style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', marginBottom: '15px', color: '#64748b', fontWeight: '600' }}>
+        <ArrowLeft size={18}/> Back to Accounts
+      </button>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '40px' }}>
-        <div>
-          <label style={{ fontSize: '11px', fontWeight: '800', color: '#64748b' }}>VENDOR NAME</label>
-          <input style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0', marginTop: '8px' }} placeholder="Vendor name..." value={po.vendor} onChange={e => setPo({...po, vendor: e.target.value})} />
+      {/* --- MAIN CARD --- */}
+      <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+        
+        {/* HEADER STRIP */}
+        <div style={{ background: '#1e1b4b', padding: '18px 30px', borderBottom: '4px solid #f59e0b', textAlign: 'center' }}>
+          <h2 style={{ color: 'white', margin: 0, fontSize: '20px', letterSpacing: '0.5px' }}>Add New Purchase Order</h2>
         </div>
-        <div>
-          <label style={{ fontSize: '11px', fontWeight: '800', color: '#64748b' }}>EXPECTED DELIVERY DATE</label>
-          <input type="date" style={{ width: '100%', padding: '12px', borderRadius: '10px', border: dateError ? '1px solid #ef4444' : '1px solid #e2e8f0', marginTop: '8px' }} onChange={e => handleDateCheck(e.target.value)} />
-          {dateError && <p style={{ color: '#ef4444', fontSize: '11px', marginTop: '5px' }}>{dateError}</p>}
-        </div>
-      </div>
 
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ textAlign: 'left', color: '#94a3b8', fontSize: '12px' }}>
-              <th>ITEM DESCRIPTION</th>
-              <th style={{ width: '100px', textAlign: 'center' }}>QTY</th>
-              <th style={{ width: '150px', textAlign: 'center' }}>RATE (₹)</th>
-              <th style={{ textAlign: 'right' }}>TOTAL</th>
-            </tr>
-          </thead>
-          <tbody>
-            {po.items.map((item, idx) => (
-              <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '15px 0' }}><input style={{ width: '100%', border: 'none', fontWeight: '600' }} value={item.desc} onChange={e => {
-                  const newItems = [...po.items];
-                  newItems[idx].desc = e.target.value;
-                  setPo({...po, items: newItems});
-                }} placeholder="Item details..." /></td>
-                <td style={{ textAlign: 'center' }}><input type="number" style={{ width: '60px', textAlign: 'center' }} value={item.qty} onChange={e => {
-                  const newItems = [...po.items];
-                  newItems[idx].qty = parseInt(e.target.value) || 0;
-                  setPo({...po, items: newItems});
-                }} /></td>
-                <td style={{ textAlign: 'center' }}><input type="number" style={{ width: '100px', textAlign: 'center' }} value={item.rate} onChange={e => {
-                  const newItems = [...po.items];
-                  newItems[idx].rate = parseFloat(e.target.value) || 0;
-                  setPo({...po, items: newItems});
-                }} /></td>
-                <td style={{ textAlign: 'right', fontWeight: '800' }}>₹{(item.qty * item.rate).toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-      </table>
-
-      <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-          <div style={{ textAlign: 'right', background: '#fff7ed', padding: '20px 40px', borderRadius: '16px' }}>
-            <span style={{ fontSize: '11px', color: '#9a3412', fontWeight: '800' }}>TOTAL PROCURED VALUE</span>
-            <div style={{ fontSize: '32px', fontWeight: '900', color: '#1e1b4b' }}>₹{grandTotal.toLocaleString()}</div>
+        <div style={{ padding: '30px' }}>
+          
+          {/* TOP ROW: PO Number, Date, Type */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '10px' }}>
+            <div>
+              <label style={labelStyle}>PO Number</label>
+              <input style={{...inputStyle, background: '#f8fafc', fontWeight: 'bold'}} value={po.poNumber} readOnly />
+            </div>
+            <div>
+              <label style={labelStyle}>PO Date</label>
+              <input 
+                 type="date" 
+                 style={{...inputStyle, cursor: 'pointer'}} 
+                 value={po.date} 
+                 onChange={(e) => handleInputChange('date', e.target.value)}
+                 onClick={(e) => e.target.showPicker()} 
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Accounting Type</label>
+              <select style={inputStyle} value={po.type} onChange={(e) => handleInputChange('type', e.target.value)}>
+                <option value="Accounting">Accounting</option>
+                <option value="Inventory">Inventory</option>
+                <option value="Services">Services</option>
+              </select>
+            </div>
           </div>
+
+          {/* VENDOR DETAILS SECTION */}
+          <h3 style={sectionHeaderStyle}>Vendor / Supplier Details</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+            <div>
+              <label style={labelStyle}>Vendor Name</label>
+              <input style={inputStyle} placeholder="Enter vendor name" value={po.vendorName} onChange={(e) => handleInputChange('vendorName', e.target.value)} />
+            </div>
+            <div>
+              <label style={labelStyle}>Contact Number</label>
+              <input style={inputStyle} placeholder="+91..." value={po.contactNumber} onChange={(e) => handleInputChange('contactNumber', e.target.value)} />
+            </div>
+            <div>
+              <label style={labelStyle}>Email Address</label>
+              <input style={inputStyle} placeholder="vendor@example.com" value={po.emailAddress} onChange={(e) => handleInputChange('emailAddress', e.target.value)} />
+            </div>
+            <div>
+               <label style={labelStyle}>GST Number</label>
+               <input style={inputStyle} placeholder="29ABCDE..." value={po.gstNumber} onChange={(e) => handleInputChange('gstNumber', e.target.value)} />
+            </div>
+             <div>
+               <label style={labelStyle}>Bank Name</label>
+               <input style={inputStyle} placeholder="e.g. HDFC Bank" value={po.bankName} onChange={(e) => handleInputChange('bankName', e.target.value)} />
+            </div>
+             <div>
+              <label style={labelStyle}>Address</label>
+              <input style={inputStyle} placeholder="Complete vendor address" value={po.address} onChange={(e) => handleInputChange('address', e.target.value)} />
+            </div>
+          </div>
+
+          {/* PURCHASE ITEMS SECTION */}
+          <h3 style={sectionHeaderStyle}>Purchase Items</h3>
+          
+          {/* Table Header */}
+          <div style={{ display: 'grid', gridTemplateColumns: '40px 3fr 1fr 1fr 1fr 1fr 1fr 40px', gap: '10px', background: '#f8fafc', padding: '12px 10px', borderRadius: '6px', marginBottom: '10px' }}>
+             <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748b' }}>S.NO</span>
+             <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748b' }}>DESCRIPTION / PARTICULARS</span>
+             <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748b' }}>HSN CODE</span>
+             <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748b' }}>QTY</span>
+             <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748b' }}>UNIT</span>
+             <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748b' }}>RATE</span>
+             <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748b' }}>TOTAL</span>
+             <span></span>
+          </div>
+
+          {/* Table Rows */}
+          {po.items.map((item, index) => (
+            <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '40px 3fr 1fr 1fr 1fr 1fr 1fr 40px', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
+               <span style={{ textAlign: 'center', fontSize: '13px', fontWeight: '600' }}>{index + 1}</span>
+               <input style={{...inputStyle, padding: '8px'}} placeholder="Item description" value={item.desc} onChange={(e) => handleItemChange(index, 'desc', e.target.value)} />
+               <input style={{...inputStyle, padding: '8px'}} placeholder="HSN" value={item.hsn} onChange={(e) => handleItemChange(index, 'hsn', e.target.value)} />
+               <input type="number" style={{...inputStyle, padding: '8px'}} value={item.qty} onChange={(e) => handleItemChange(index, 'qty', Number(e.target.value))} />
+               <select style={{...inputStyle, padding: '8px'}} value={item.unit} onChange={(e) => handleItemChange(index, 'unit', e.target.value)}>
+                 <option>Nos</option>
+                 <option>Kg</option>
+                 <option>Sets</option>
+                 <option>Hrs</option>
+               </select>
+               <input type="number" style={{...inputStyle, padding: '8px'}} placeholder="0.00" value={item.rate} onChange={(e) => handleItemChange(index, 'rate', Number(e.target.value))} />
+               <input style={{...inputStyle, padding: '8px', background: '#f1f5f9'}} value={(item.qty * item.rate).toFixed(2)} readOnly />
+               <button onClick={() => removeItem(index)} style={{ background: '#fee2e2', border: 'none', borderRadius: '6px', height: '35px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                 <Trash2 size={16} color="#ef4444" />
+               </button>
+            </div>
+          ))}
+
+          {/* ADD BUTTON */}
+          <button onClick={addItem} style={{ background: '#10b981', color: 'white', border: 'none', padding: '10px 18px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Plus size={16} /> Add Item
+          </button>
+
+          {/* FOOTER / TOTALS SECTION */}
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '40px', marginTop: '50px' }}>
+             
+             {/* Notes Area */}
+             <div>
+               <label style={labelStyle}>Remarks / Notes</label>
+               <textarea 
+                 style={{...inputStyle, resize: 'vertical', minHeight: '120px', fontFamily: 'inherit'}} 
+                 placeholder="Additional notes or special instructions"
+                 value={po.notes}
+                 onChange={(e) => handleInputChange('notes', e.target.value)}
+               />
+             </div>
+
+             {/* Calculation Box */}
+             <div style={{ background: '#fff7ed', padding: '25px', borderRadius: '12px', border: '1px solid #ffedd5' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px' }}>
+                  <span>Net Total:</span>
+                  <span style={{ fontWeight: '600' }}>₹{totals.netTotal.toFixed(2)}</span>
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', alignItems: 'center' }}>
+                  <span style={{ fontSize: '14px' }}>Freight Charges:</span>
+                  <input 
+                    type="number" 
+                    style={{ width: '100px', padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                    value={po.freight}
+                    onChange={(e) => handleInputChange('freight', e.target.value)}
+                  />
+                </div>
+                
+                <div style={{ borderTop: '1px solid #fed7aa', margin: '15px 0' }}></div>
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', fontSize: '17px', fontWeight: '800', color: '#1e1b4b' }}>
+                  <span>Grand Total:</span>
+                  <span>₹{totals.grandTotal.toFixed(2)}</span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', alignItems: 'center' }}>
+                  <span style={{ fontSize: '14px' }}>Paid Amount:</span>
+                  <input 
+                    type="number" 
+                    style={{ width: '100px', padding: '6px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                    value={po.paidAmount}
+                    onChange={(e) => handleInputChange('paidAmount', e.target.value)}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: '700', color: totals.balance > 0 ? '#ea580c' : '#166534' }}>
+                  <span>Balance:</span>
+                  <span>₹{totals.balance.toFixed(2)}</span>
+                </div>
+             </div>
+          </div>
+
+          {/* SAVE BUTTON */}
+          <div style={{ textAlign: 'right', marginTop: '40px' }}>
+            <button 
+              onClick={handleSave} 
+              style={{ 
+                background: '#1e1b4b', 
+                color: 'white', 
+                border: 'none', 
+                padding: '14px 36px', 
+                borderRadius: '8px', 
+                fontSize: '15px', 
+                fontWeight: '600', 
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(30, 27, 75, 0.2)' 
+              }}
+            >
+              Save Purchase Order
+            </button>
+          </div>
+
+        </div>
       </div>
-      <button onClick={() => alert("PO Finalized!")} style={{ width: '100%', marginTop: '40px', background: '#7C3AED', color: 'white', padding: '18px', borderRadius: '15px', border: 'none', fontWeight: '800', fontSize: '16px' }}>Authorize Purchase Order</button>
     </div>
   );
 };
