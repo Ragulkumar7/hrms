@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, ArrowUpCircle, ArrowDownCircle, Wallet, List } from 'lucide-react';
+import { Plus, Trash2, ArrowUpCircle, ArrowDownCircle, Wallet, List, Download } from 'lucide-react';
 
 const Ledger = () => {
   const [entries, setEntries] = useState([
@@ -32,67 +32,77 @@ const Ledger = () => {
   };
 
   return (
-    <div style={{ padding: '20px', background: '#f8fafc', minHeight: '100vh' }}>
-      <div style={{ marginBottom: '20px' }}>
-        <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#1e1b4b' }}>General Ledger</h2>
-        <p style={{ fontSize: '12px', color: '#64748b' }}>Monitor and manage company financial transactions</p>
-      </div>
-
-      {/* Summary Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '25px' }}>
-        {[
-          { label: 'TOTAL CREDIT', val: totals.credit, color: '#10b981', icon: <ArrowUpCircle size={20}/> },
-          { label: 'TOTAL DEBIT', val: totals.debit, color: '#ef4444', icon: <ArrowDownCircle size={20}/> },
-          { label: 'NET BALANCE', val: totals.balance, color: '#7c3aed', icon: <Wallet size={20}/> },
-          { label: 'TOTAL ENTRIES', val: entries.length, color: '#1e1b4b', icon: <List size={20}/> }
-        ].map((card, i) => (
-          <div key={i} style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', borderLeft: `4px solid ${card.color}` }}>
-            <span style={{ fontSize: '10px', fontWeight: '800', color: '#64748b' }}>{card.label}</span>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-              <span style={{ fontSize: '18px', fontWeight: '800', color: card.color }}>₹ {card.val.toLocaleString()}</span>
-              <span style={{ opacity: 0.3 }}>{card.icon}</span>
-            </div>
+    <div className="fade-in-up" style={{ padding: '30px', background: '#f8fafc' }}>
+      <div className="stats-grid" style={{ marginBottom: '30px' }}>
+        <div className="finance-summary-box" style={{ borderLeft: '4px solid #16a34a' }}>
+          <div className="finance-summary-item">
+            <label>Total Credit</label>
+            <span style={{ color: '#16a34a' }}>₹ {totals.credit.toLocaleString()}</span>
           </div>
-        ))}
-      </div>
-
-      {/* Entry Form */}
-      <div style={{ background: 'white', padding: '20px', borderRadius: '12px', marginBottom: '25px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-        <h4 style={{ marginBottom: '15px', fontSize: '14px', color: '#1e1b4b' }}>Add Manual Entry</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 2fr 1fr auto', gap: '10px', alignItems: 'end' }}>
-          <div><label style={{display:'block', fontSize:'11px', marginBottom:'5px'}}>Date</label><input type="date" value={newEntry.date} onChange={e => setNewEntry({...newEntry, date: e.target.value})} style={{width:'100%', padding:'8px', border:'1px solid #e2e8f0', borderRadius:'6px'}}/></div>
-          <div><label style={{display:'block', fontSize:'11px', marginBottom:'5px'}}>Type</label><select value={newEntry.type} onChange={e => setNewEntry({...newEntry, type: e.target.value})} style={{width:'100%', padding:'8px', border:'1px solid #e2e8f0', borderRadius:'6px'}}><option>Credit</option><option>Debit</option></select></div>
-          <div><label style={{display:'block', fontSize:'11px', marginBottom:'5px'}}>Category</label><input type="text" value={newEntry.category} onChange={e => setNewEntry({...newEntry, category: e.target.value})} style={{width:'100%', padding:'8px', border:'1px solid #e2e8f0', borderRadius:'6px'}}/></div>
-          <div><label style={{display:'block', fontSize:'11px', marginBottom:'5px'}}>Notes</label><input type="text" value={newEntry.notes} onChange={e => setNewEntry({...newEntry, notes: e.target.value})} style={{width:'100%', padding:'8px', border:'1px solid #e2e8f0', borderRadius:'6px'}}/></div>
-          <div><label style={{display:'block', fontSize:'11px', marginBottom:'5px'}}>Amount</label><input type="number" value={newEntry.amount} onChange={e => setNewEntry({...newEntry, amount: e.target.value})} style={{width:'100%', padding:'8px', border:'1px solid #e2e8f0', borderRadius:'6px'}}/></div>
-          <button onClick={handleAddEntry} style={{background:'#1e1b4b', color:'white', border:'none', padding:'10px 20px', borderRadius:'6px', cursor:'pointer'}}><Plus size={18}/></button>
+          <ArrowUpCircle style={{ marginLeft: 'auto', color: '#dcfce7' }} size={32}/>
+        </div>
+        <div className="finance-summary-box" style={{ borderLeft: '4px solid #dc2626' }}>
+          <div className="finance-summary-item">
+            <label>Total Debit</label>
+            <span style={{ color: '#dc2626' }}>₹ {totals.debit.toLocaleString()}</span>
+          </div>
+          <ArrowDownCircle style={{ marginLeft: 'auto', color: '#fee2e2' }} size={32}/>
+        </div>
+        <div className="finance-summary-box" style={{ borderLeft: '4px solid #FF9B44' }}>
+          <div className="finance-summary-item">
+            <label>Net Balance</label>
+            <span>₹ {totals.balance.toLocaleString()}</span>
+          </div>
+          <Wallet style={{ marginLeft: 'auto', color: '#fff7ed' }} size={32}/>
         </div>
       </div>
 
-      {/* Table */}
-      <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+      <div style={{ background: '#1e1b4b', padding: '25px', borderRadius: '16px', marginBottom: '30px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
+        <h4 style={{ color: 'white', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px', opacity: '0.6' }}>Transaction Console</h4>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr) auto', gap: '15px', alignItems: 'end' }}>
+          <div className="form-group">
+            <label style={{ color: 'white', fontSize: '10px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>DATE</label>
+            <input type="date" style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '10px', borderRadius: '8px', width: '100%' }} value={newEntry.date} onChange={e => setNewEntry({...newEntry, date: e.target.value})} />
+          </div>
+          <div className="form-group">
+            <label style={{ color: 'white', fontSize: '10px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>TYPE</label>
+            <select style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '10px', borderRadius: '8px', width: '100%' }} value={newEntry.type} onChange={e => setNewEntry({...newEntry, type: e.target.value})}><option style={{color:'black'}}>Credit</option><option style={{color:'black'}}>Debit</option></select>
+          </div>
+          <div className="form-group">
+            <label style={{ color: 'white', fontSize: '10px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>CATEGORY</label>
+            <input style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '10px', borderRadius: '8px', width: '100%' }} value={newEntry.category} onChange={e => setNewEntry({...newEntry, category: e.target.value})} />
+          </div>
+          <div className="form-group">
+            <label style={{ color: 'white', fontSize: '10px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>NOTES</label>
+            <input style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '10px', borderRadius: '8px', width: '100%' }} value={newEntry.notes} onChange={e => setNewEntry({...newEntry, notes: e.target.value})} />
+          </div>
+          <div className="form-group">
+            <label style={{ color: 'white', fontSize: '10px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>AMOUNT (₹)</label>
+            <input type="number" style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '10px', borderRadius: '8px', width: '100%' }} value={newEntry.amount} onChange={e => setNewEntry({...newEntry, amount: e.target.value})} />
+          </div>
+          <button className="btn-action" style={{ height: '42px', width: '42px', padding: '0', display: 'flex', alignItems: 'center', justifySelf: 'center' }} onClick={handleAddEntry}><Plus size={20}/></button>
+        </div>
+      </div>
+
+      <div className="glass-card" style={{ padding: '0' }}>
+        <table className="accounts-data-table">
           <thead>
-            <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-              <th style={{ padding: '15px', fontSize: '12px' }}>DATE</th>
-              <th style={{ padding: '15px', fontSize: '12px' }}>TYPE</th>
-              <th style={{ padding: '15px', fontSize: '12px' }}>CATEGORY</th>
-              <th style={{ padding: '15px', fontSize: '12px' }}>NOTES</th>
-              <th style={{ padding: '15px', fontSize: '12px' }}>AMOUNT</th>
-              <th style={{ padding: '15px', fontSize: '12px' }}>ACTION</th>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Notes</th>
+              <th style={{ textAlign: 'right' }}>Amount</th>
             </tr>
           </thead>
           <tbody>
             {entries.map(item => (
-              <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '15px', fontSize: '13px' }}>{item.date}</td>
-                <td style={{ padding: '15px' }}>
-                  <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '11px', background: item.type === 'Credit' ? '#dcfce7' : '#fee2e2', color: item.type === 'Credit' ? '#166534' : '#991b1b' }}>{item.type}</span>
-                </td>
-                <td style={{ padding: '15px', fontSize: '13px' }}>{item.category}</td>
-                <td style={{ padding: '15px', fontSize: '13px', color: '#64748b' }}>{item.notes}</td>
-                <td style={{ padding: '15px', fontSize: '13px', fontWeight: '700' }}>₹ {item.amount.toLocaleString()}</td>
-                <td style={{ padding: '15px' }}><button style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={16}/></button></td>
+              <tr key={item.id}>
+                <td style={{ fontWeight: '600', color: '#64748b' }}>{item.date}</td>
+                <td><span className={`status-pill ${item.type === 'Credit' ? 'approved' : 'rejected'}`}>{item.type}</span></td>
+                <td style={{ fontWeight: '700', color: '#1e293b' }}>{item.category}</td>
+                <td style={{ color: '#94a3b8', fontSize: '13px' }}>{item.notes}</td>
+                <td style={{ textAlign: 'right', fontWeight: '800', color: '#1e293b' }}>₹ {item.amount.toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
