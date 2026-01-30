@@ -26,6 +26,7 @@ import Sales from "./components/Sales";
 import Recruitment from "./components/Recruitment";
 import HRManagement from "./components/hrManagement";
 import TeamLeadDashboard from "./components/TeamLead";
+import TeamLeadPortal from "./components/TeamLeadPortal"; // ADDED: Import for the new progress page
 import SelfAssignedTask from "./components/SelfAssignedTask";
 import Logout from "./components/Logout";
 import DigitalMarketing from "./components/DigitalMarketing";
@@ -174,16 +175,11 @@ function App() {
                 <Route path="/it" element={<ITOperations />} />
 
                 {/* --- ATTENDANCE ROUTES --- */}
-                {/* 1. Clicking Attendance opens EmployeeAttendance.jsx */}
                 <Route
                   path="/EmployeeAttendance"
                   element={<EmployeeAttendance />}
                 />
-
-                {/* 2. Clicking Attendance History (or My History) opens Attendance.jsx */}
                 <Route path="/attendance" element={<Attendance />} />
-
-                {/* 3. Global Attendance Summary Path */}
                 <Route path="/attendance-history" element={<Attendance />} />
 
                 <Route path="/tasks" element={<TaskManagement />} />
@@ -207,8 +203,10 @@ function App() {
                   element={<DigitalExecutive />}
                 />
 
+                {/* --- TEAM LEAD ROUTES --- */}
+                <Route path="/teamlead" element={<TeamLeadPortal />} />
                 <Route
-                  path="/TeamLead"
+                  path="/TeamLeadDashboard"
                   element={
                     <TeamLeadDashboard
                       allTasks={[]}
