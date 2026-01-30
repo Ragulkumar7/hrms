@@ -25,26 +25,24 @@ import Sales from "./components/Sales";
 import Recruitment from "./components/Recruitment";
 import HRManagement from "./components/hrManagement";
 import TeamLeadDashboard from "./components/TeamLead";
-import SelfAssignedTask from "./components/SelfAssignedTask"; 
-import Logout from './components/Logout';
+import SelfAssignedTask from "./components/SelfAssignedTask";
+import Logout from "./components/Logout";
+import DigitalMarketing from "./components/DigitalMarketing"; // Added Import
 
 // --- NEW ACCOUNTS IMPORTS ---
 import Accountsteam from "./components/Accountsteam";
-import InvoiceSystem from "./components/accounts/InvoiceSystem"; 
+import InvoiceSystem from "./components/accounts/InvoiceSystem";
 import SalaryProcessor from "./components/accounts/SalaryProcessor";
 
-import { Bell, Search, ChevronDown } from "lucide-react"; 
+import { Bell, Search, ChevronDown } from "lucide-react";
 import "./App.css";
 
 // --- HEADER PROFILE (Fixed Optional Chaining) ---
 const HeaderProfile = () => {
   const { user } = useUser();
-  // Using optional chaining to prevent crash if user data is missing
   return (
     <div className="profile-pill">
-      <div className="avatar-gradient">
-        {user?.name?.charAt(0) || "U"}
-      </div>
+      <div className="avatar-gradient">{user?.name?.charAt(0) || "U"}</div>
       <div className="profile-text">
         <span className="p-name">{user?.name || "User"}</span>
         <span className="p-role">{user?.role || "Role"}</span>
@@ -60,23 +58,47 @@ const RoleSwitcher = () => {
   return (
     <div
       style={{
-        position: "fixed", bottom: "20px", right: "20px",
-        background: "white", padding: "12px", borderRadius: "12px",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.15)", border: "1px solid #E9D5FF", zIndex: 9999,
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
+        background: "white",
+        padding: "12px",
+        borderRadius: "12px",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+        border: "1px solid #E9D5FF",
+        zIndex: 9999,
       }}
     >
-      <p style={{ fontSize: "10px", fontWeight: "800", marginBottom: "8px", color: "#6D28D9", textTransform: "uppercase" }}>
+      <p
+        style={{
+          fontSize: "10px",
+          fontWeight: "800",
+          marginBottom: "8px",
+          color: "#6D28D9",
+          textTransform: "uppercase",
+        }}
+      >
         Current: {user?.role}
       </p>
       <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-        {['Manager', 'HR', 'Accounts', 'TL', 'Employee'].map((role) => (
+        {["Manager", "HR", "Accounts", "TL", "DM", "Employee"].map((role) => (
           <button
             key={role}
-            onClick={() => login(role === 'TL' ? 'TL' : role, role === 'TL' ? 'TL-01' : undefined)}
+            onClick={() =>
+              login(
+                role === "TL" ? "TL" : role,
+                role === "TL" ? "TL-01" : undefined,
+              )
+            }
             style={{
-              fontSize: "10px", padding: "5px 10px", cursor: "pointer",
-              border: "1px solid #DDD6FE", background: user?.role === role ? "#6D28D9" : "#F5F3FF",
-              color: user?.role === role ? "white" : "#6D28D9", borderRadius: "6px", fontWeight: "700"
+              fontSize: "10px",
+              padding: "5px 10px",
+              cursor: "pointer",
+              border: "1px solid #DDD6FE",
+              background: user?.role === role ? "#6D28D9" : "#F5F3FF",
+              color: user?.role === role ? "white" : "#6D28D9",
+              borderRadius: "6px",
+              fontWeight: "700",
             }}
           >
             {role}
@@ -90,7 +112,17 @@ const RoleSwitcher = () => {
 const DashboardHome = () => {
   const { user } = useUser();
   if (user?.role === "Employee") return <EmployeeDashboard />;
-  if (user?.role === "TL") return <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />;
+  if (user?.role === "TL")
+    return (
+      <TeamLeadDashboard
+        allTasks={[]}
+        setAllTasks={() => {}}
+        addNewTask={() => {}}
+      />
+    );
+  // ADDED DM REDIRECT
+  if (user?.role === "DM") return <DigitalMarketing />;
+
   return <AdminDashboard />;
 };
 
@@ -167,12 +199,12 @@ function App() {
                 <Route path="/employees" element={<Employees />} />
                 <Route path="/manager" element={<ManagerDashboard />} />
                 <Route path="/payroll" element={<Accounts />} />
-                
+
                 {/* --- NEW ACCOUNTS ROUTES --- */}
                 <Route path="/accountsteam" element={<Accountsteam />} />
                 <Route path="/invoice" element={<InvoiceSystem />} />
                 <Route path="/salary-process" element={<SalaryProcessor />} />
-                
+
                 <Route path="/it" element={<ITOperations />} />
                 <Route path="/attendance" element={<Attendance />} />
                 <Route path="/tasks" element={<TaskManagement />} />
@@ -181,7 +213,21 @@ function App() {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/recruitment" element={<Recruitment />} />
-                <Route path="/TeamLead" element={ <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />} />
+                {/* ADDED DM ROUTE */}
+                <Route
+                  path="/digital-marketing"
+                  element={<DigitalMarketing />}
+                />
+                <Route
+                  path="/TeamLead"
+                  element={
+                    <TeamLeadDashboard
+                      allTasks={[]}
+                      setAllTasks={() => {}}
+                      addNewTask={() => {}}
+                    />
+                  }
+                />
                 <Route path="/logout" element={<Logout />} />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
