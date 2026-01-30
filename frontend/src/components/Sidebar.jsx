@@ -61,7 +61,7 @@ const Sidebar = () => {
           name: "Employees Directory",
           path: "/employees",
           icon: <Users size={20} />,
-          allowed: ["Manager", "TL", "HR"],
+          allowed: ["Manager", "HR"],
         },
         {
           name: "Manager Portal",
