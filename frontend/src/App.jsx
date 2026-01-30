@@ -30,9 +30,9 @@ import Logout from "./components/Logout";
 import DigitalMarketing from "./components/DigitalMarketing"; // Added Import
 
 // --- NEW ACCOUNTS IMPORTS ---
-import Accountsteam from "./components/Accountsteam";
+import purchaseorder from "./components/purchaseorder";
 import InvoiceSystem from "./components/accounts/InvoiceSystem";
-import SalaryProcessor from "./components/accounts/SalaryProcessor";
+import ledger from "./components/accounts/ledger";
 
 import { Bell, Search, ChevronDown } from "lucide-react";
 import "./App.css";
@@ -201,9 +201,9 @@ function App() {
                 <Route path="/payroll" element={<Accounts />} />
 
                 {/* --- NEW ACCOUNTS ROUTES --- */}
-                <Route path="/accountsteam" element={<Accountsteam />} />
+                <Route path="/purchase-order" element={<purchaseorder />} />
                 <Route path="/invoice" element={<InvoiceSystem />} />
-                <Route path="/salary-process" element={<SalaryProcessor />} />
+                <Route path="/ledger" element={<ledger />} />
 
                 <Route path="/it" element={<ITOperations />} />
                 <Route path="/attendance" element={<Attendance />} />
