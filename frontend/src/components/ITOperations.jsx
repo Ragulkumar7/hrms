@@ -82,92 +82,119 @@ const ITOperations = () => {
     return (
       <div className="glass-card" style={{ backgroundColor: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
         <div style={{ padding: '15px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h4 style={{ margin: 0 }}><Icon size={18} /> {sectorName} Ledger</h4>
+          <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+             <Icon size={18} /> {sectorName} Ledger
+          </h4>
           <select value={ledgerItemFilter} onChange={(e) => setLedgerItemFilter(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
             {roles.map(role => <option key={role} value={role}>{role}</option>)}
           </select>
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead style={{ backgroundColor: '#f8fafc', textAlign: 'left' }}>
-            <tr>
-              <th style={thStyle}>Worker & Area</th>
-              <th style={thStyle}>Work Type</th>
-              <th style={thStyle}>Cost</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* ROW 1: ALWAYS SHOW THE REGISTERED MEMBER */}
-            {registeredName && (
-              <tr style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: '#f0f9ff' }}>
-                <td style={tdStyle}>
-                  <div style={{ fontWeight: 'bold', color: '#1e40af' }}>{registeredName} (Registered)</div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}>Primary Member</div>
-                </td>
-                <td style={tdStyle}>
-                  <div>{ledgerItemFilter}</div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}>Active</div>
-                </td>
-                <td style={tdStyle}>--</td>
-              </tr>
-            )}
+        <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+            <thead style={{ backgroundColor: '#f8fafc', textAlign: 'left' }}>
+                <tr>
+                <th style={thStyle}>Worker & Area</th>
+                <th style={thStyle}>Work Type</th>
+                <th style={thStyle}>Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                {/* ROW 1: ALWAYS SHOW THE REGISTERED MEMBER */}
+                {registeredName && (
+                <tr style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: '#f0f9ff' }}>
+                    <td style={tdStyle}>
+                    <div style={{ fontWeight: 'bold', color: '#1e40af' }}>{registeredName} (Registered)</div>
+                    <div style={{ fontSize: '11px', color: '#64748b' }}>Primary Member</div>
+                    </td>
+                    <td style={tdStyle}>
+                    <div>{ledgerItemFilter}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b' }}>Active</div>
+                    </td>
+                    <td style={tdStyle}>--</td>
+                </tr>
+                )}
 
-            {/* SUBSEQUENT ROWS: SHOW ASSIGNED TASKS */}
-            {filteredTasks.map(t => (
-              <tr key={t.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={tdStyle}>
-                  <div style={{ fontWeight: '600' }}>{t.name}</div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}><MapPin size={10} /> {t.area}</div>
-                </td>
-                <td style={tdStyle}>
-                  <div>{t.item}</div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}><Clock size={10} /> {t.time}</div>
-                </td>
-                <td style={tdStyle}>₹{t.expense}</td>
-              </tr>
-            ))}
+                {/* SUBSEQUENT ROWS: SHOW ASSIGNED TASKS */}
+                {filteredTasks.map(t => (
+                <tr key={t.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={tdStyle}>
+                    <div style={{ fontWeight: '600' }}>{t.name}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b' }}><MapPin size={10} /> {t.area}</div>
+                    </td>
+                    <td style={tdStyle}>
+                    <div>{t.item}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b' }}><Clock size={10} /> {t.time}</div>
+                    </td>
+                    <td style={tdStyle}>₹{t.expense}</td>
+                </tr>
+                ))}
 
-            {/* IF NO ONE IS REGISTERED AND NO TASKS */}
-            {!registeredName && filteredTasks.length === 0 && (
-               <tr><td colSpan="3" style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No data found.</td></tr>
-            )}
-          </tbody>
-        </table>
+                {!registeredName && filteredTasks.length === 0 && (
+                <tr><td colSpan="3" style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No data found.</td></tr>
+                )}
+            </tbody>
+            </table>
+        </div>
       </div>
     );
   };
 
   return (
     <div className="it-view-container" style={{ padding: '20px', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .responsive-grid { grid-template-columns: 1fr !important; }
+          .it-view-container { padding: 10px !important; }
+          .tab-container { flex-direction: column; }
+        }
+      `}</style>
+
       {notification.message && (
         <div style={{ position: 'fixed', top: '20px', right: '20px', padding: '12px 24px', borderRadius: '8px', backgroundColor: notification.type === 'success' ? '#10b981' : '#ef4444', color: 'white', zIndex: 9999 }}>
           {notification.message}
         </div>
       )}
 
+      {/* HEADER - MATCHING YOUR IMAGE */}
+      <div style={{ marginBottom: '25px' }}>
+        <h2 style={{ fontSize: '24px', color: '#1e293b', fontWeight: '700', margin: '0 0 20px 0' }}>IT & Operations Control Center</h2>
+        
+        <div style={{ display: 'flex', gap: '12px' }} className="tab-container">
+            <button 
+                style={activeTab === 'Internal' ? activeTabStyle : inactiveTabStyle} 
+                onClick={() => handleTabChange('Internal')}
+            >
+                <Home size={18} /> Internal Ledger
+            </button>
+            <button 
+                style={activeTab === 'External' ? activeTabStyle : inactiveTabStyle} 
+                onClick={() => handleTabChange('External')}
+            >
+                <Shield size={18} /> External Ledger
+            </button>
+        </div>
+      </div>
+
       {/* REGISTER SECTION */}
       <div style={{ marginBottom: '25px', padding: '20px', border: '1px solid #e2e8f0', borderRadius: '12px', backgroundColor: 'white' }}>
-        <h4 style={{ marginTop: 0, color: '#2563eb' }}><PlusCircle size={20} /> Register New Member to Department</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '15px', alignItems: 'end' }}>
+        <h4 style={{ marginTop: 0, color: '#4C1D95', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <PlusCircle size={20} /> Register New Member to Department
+        </h4>
+        <div className="responsive-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '15px', alignItems: 'end' }}>
           <select value={newEmployee.sector} onChange={(e) => setNewEmployee({...newEmployee, sector: e.target.value})} style={inputStyle}>
             <option value="Internal">Internal Team</option>
             <option value="External">External Team</option>
           </select>
           <input type="text" placeholder="Category (e.g. Electrician)" value={newEmployee.role} onChange={(e) => setNewEmployee({ ...newEmployee, role: e.target.value })} style={inputStyle} />
           <input type="text" placeholder="Worker Name" value={newEmployee.name} onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })} style={inputStyle} />
-          <button onClick={handleRegisterEmployee} style={{ backgroundColor: '#2563eb', color: 'white', border: 'none', height: '42px', padding: '0 25px', borderRadius: '6px', fontWeight: 'bold' }}>Register</button>
+          <button onClick={handleRegisterEmployee} style={{ backgroundColor: '#4C1D95', color: 'white', border: 'none', height: '42px', padding: '0 25px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Register</button>
         </div>
-      </div>
-
-      {/* TABS */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <button style={activeTab === 'Internal' ? activeTabStyle : inactiveTabStyle} onClick={() => handleTabChange('Internal')}>Internal Team</button>
-        <button style={activeTab === 'External' ? activeTabStyle : inactiveTabStyle} onClick={() => handleTabChange('External')}>External Team</button>
       </div>
 
       {/* ASSIGN TASK FORM */}
       <div style={{ marginBottom: '30px', padding: '25px', backgroundColor: 'white', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
         <h4 style={{ marginTop: 0 }}>Assign {activeTab} Task</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
+        <div className="responsive-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
           <select value={newRequest.item} onChange={(e) => setNewRequest({...newRequest, item: e.target.value})} style={inputStyle}>
             {Object.keys(registry[activeTab]).map(role => <option key={role} value={role}>{role}</option>)}
           </select>
@@ -175,19 +202,18 @@ const ITOperations = () => {
           <input type="text" placeholder="Area" value={newRequest.area} onChange={(e) => setNewRequest({ ...newRequest, area: e.target.value })} style={inputStyle} />
           <input type="text" placeholder="Time" value={newRequest.time} onChange={(e) => setNewRequest({ ...newRequest, time: e.target.value })} style={inputStyle} />
           <input type="number" placeholder="Cost" value={newRequest.expense} onChange={(e) => setNewRequest({ ...newRequest, expense: e.target.value })} style={inputStyle} />
-          <button onClick={handleAddRequest} style={{ backgroundColor: '#f97316', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold' }}>Assign Task</button>
+          <button onClick={handleAddRequest} style={{ backgroundColor: '#f97316', color: 'white', border: 'none', height: '42px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Assign Task</button>
         </div>
       </div>
 
-      {/* THE UPDATED TABLE */}
       <LedgerTable sectorName={activeTab} icon={activeTab === 'Internal' ? Home : Shield} sectorType={activeTab} />
     </div>
   );
 };
 
-const inputStyle = { width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' };
-const activeTabStyle = { padding: '10px 20px', borderRadius: '8px', border: 'none', backgroundColor: '#2563eb', color: 'white', fontWeight: 'bold', cursor: 'pointer' };
-const inactiveTabStyle = { padding: '10px 20px', borderRadius: '8px', border: 'none', backgroundColor: '#e2e8f0', color: '#64748b', fontWeight: 'bold', cursor: 'pointer' };
+const inputStyle = { width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', boxSizing: 'border-box' };
+const activeTabStyle = { padding: '10px 20px', borderRadius: '8px', border: 'none', backgroundColor: '#4C1D95', color: 'white', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' };
+const inactiveTabStyle = { padding: '10px 20px', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: 'transparent', color: '#64748b', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' };
 const thStyle = { padding: '12px 15px', fontSize: '13px', color: '#64748b', fontWeight: '600' };
 const tdStyle = { padding: '12px 15px', fontSize: '14px' };
 
