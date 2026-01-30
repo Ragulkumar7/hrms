@@ -1,84 +1,95 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Plus, Save, FileText, Trash2 } from 'lucide-react';
+import { ShoppingCart, Plus, Save } from 'lucide-react';
 
 const PurchaseOrder = () => {
-  const [poData, setPoData] = useState({
+  const [po, setPo] = useState({
     vendor: '',
-    poNumber: 'PO-2026-0045',
+    poNumber: `PO-2026-00${Math.floor(Math.random()*90)+10}`,
     date: new Date().toISOString().split('T')[0],
-    items: [{ id: 1, desc: '', qty: 0, rate: 0, total: 0 }]
+    deliveryDate: '',
+    items: [{ id: 1, desc: '', qty: 1, rate: 0 }]
   });
 
-  const updateItem = (id, field, val) => {
-    const updated = poData.items.map(item => {
-      if (item.id === id) {
-        const newItem = { ...item, [field]: val };
-        newItem.total = (newItem.qty || 0) * (newItem.rate || 0);
-        return newItem;
-      }
-      return item;
-    });
-    setPoData({ ...poData, items: updated });
+  const [dateError, setDateError] = useState("");
+
+  const handleDateCheck = (val) => {
+    const selected = new Date(val);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    if (selected < today) {
+      setDateError("Delivery date cannot be in the past!");
+    } else {
+      setDateError("");
+      setPo({...po, deliveryDate: val});
+    }
   };
 
-  const grandTotal = poData.items.reduce((sum, item) => sum + item.total, 0);
+  const grandTotal = po.items.reduce((sum, item) => sum + (item.qty * item.rate), 0);
 
   return (
-    <div className="fade-in-up" style={{ padding: '30px', background: '#f8fafc' }}>
-      <div style={{ background: '#1e1b4b', padding: '40px', borderRadius: '24px 24px 0 0', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <div style={{ background: '#FF9B44', padding: '12px', borderRadius: '14px' }}><ShoppingCart size={28}/></div>
-          <div>
-            <h2 style={{ fontSize: '24px', fontWeight: '900', letterSpacing: '-0.02em' }}>PURCHASE ORDER</h2>
-            <p style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', letterSpacing: '1px' }}>Internal Procurement Module</p>
-          </div>
+    <div style={{ background: 'white', padding: '40px', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+      <div style={{ background: '#1e1b4b', color: 'white', padding: '30px', borderRadius: '16px', marginBottom: '35px', display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <ShoppingCart style={{ color: '#FF9B44' }}/>
+          <h2 style={{ margin: 0, fontSize: '22px' }}>New Purchase Order</h2>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '20px', fontWeight: '800', color: '#FF9B44' }}>{poData.poNumber}</div>
-          <div style={{ fontSize: '12px', fontWeight: '600', opacity: '0.6' }}>Date: {poData.date}</div>
+          <div style={{ fontSize: '18px', fontWeight: '800', color: '#FF9B44' }}>{po.poNumber}</div>
         </div>
       </div>
 
-      <div className="glass-card" style={{ borderRadius: '0 0 24px 24px', padding: '40px' }}>
-        <div style={{ marginBottom: '40px', maxWidth: '400px' }}>
-          <label style={{ fontSize: '10px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Target Vendor</label>
-          <input className="standard-input" style={{ width: '100%' }} placeholder="Enter vendor name..." value={poData.vendor} onChange={e => setPoData({...poData, vendor: e.target.value})} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '40px' }}>
+        <div>
+          <label style={{ fontSize: '11px', fontWeight: '800', color: '#64748b' }}>VENDOR NAME</label>
+          <input style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0', marginTop: '8px' }} placeholder="Vendor name..." value={po.vendor} onChange={e => setPo({...po, vendor: e.target.value})} />
         </div>
+        <div>
+          <label style={{ fontSize: '11px', fontWeight: '800', color: '#64748b' }}>EXPECTED DELIVERY DATE</label>
+          <input type="date" style={{ width: '100%', padding: '12px', borderRadius: '10px', border: dateError ? '1px solid #ef4444' : '1px solid #e2e8f0', marginTop: '8px' }} onChange={e => handleDateCheck(e.target.value)} />
+          {dateError && <p style={{ color: '#ef4444', fontSize: '11px', marginTop: '5px' }}>{dateError}</p>}
+        </div>
+      </div>
 
-        <table className="accounts-data-table">
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr>
-              <th>Item Description</th>
-              <th style={{ width: '120px', textAlign: 'center' }}>Qty</th>
-              <th style={{ width: '180px', textAlign: 'center' }}>Unit Rate</th>
-              <th style={{ width: '180px', textAlign: 'right' }}>Aggregate</th>
+            <tr style={{ textAlign: 'left', color: '#94a3b8', fontSize: '12px' }}>
+              <th>ITEM DESCRIPTION</th>
+              <th style={{ width: '100px', textAlign: 'center' }}>QTY</th>
+              <th style={{ width: '150px', textAlign: 'center' }}>RATE (₹)</th>
+              <th style={{ textAlign: 'right' }}>TOTAL</th>
             </tr>
           </thead>
           <tbody>
-            {poData.items.map(item => (
-              <tr key={item.id}>
-                <td style={{ padding: '20px 0' }}><input style={{ width: '100%', border: 'none', outline: 'none', fontWeight: '600', color: '#334155' }} placeholder="Office hardware, assets..." value={item.desc} onChange={e => updateItem(item.id, 'desc', e.target.value)} /></td>
-                <td style={{ textAlign: 'center' }}><input type="number" className="standard-input" style={{ width: '80px', textAlign: 'center' }} value={item.qty} onChange={e => updateItem(item.id, 'qty', parseInt(e.target.value))} /></td>
-                <td style={{ textAlign: 'center' }}><input type="number" className="standard-input" style={{ width: '120px', textAlign: 'center' }} value={item.rate} onChange={e => updateItem(item.id, 'rate', parseFloat(e.target.value))} /></td>
-                <td style={{ textAlign: 'right', fontWeight: '800', color: '#1e293b' }}>₹ {item.total.toLocaleString()}</td>
+            {po.items.map((item, idx) => (
+              <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: '15px 0' }}><input style={{ width: '100%', border: 'none', fontWeight: '600' }} value={item.desc} onChange={e => {
+                  const newItems = [...po.items];
+                  newItems[idx].desc = e.target.value;
+                  setPo({...po, items: newItems});
+                }} placeholder="Item details..." /></td>
+                <td style={{ textAlign: 'center' }}><input type="number" style={{ width: '60px', textAlign: 'center' }} value={item.qty} onChange={e => {
+                  const newItems = [...po.items];
+                  newItems[idx].qty = parseInt(e.target.value) || 0;
+                  setPo({...po, items: newItems});
+                }} /></td>
+                <td style={{ textAlign: 'center' }}><input type="number" style={{ width: '100px', textAlign: 'center' }} value={item.rate} onChange={e => {
+                  const newItems = [...po.items];
+                  newItems[idx].rate = parseFloat(e.target.value) || 0;
+                  setPo({...po, items: newItems});
+                }} /></td>
+                <td style={{ textAlign: 'right', fontWeight: '800' }}>₹{(item.qty * item.rate).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
-        </table>
+      </table>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '40px' }}>
-          <button style={{ background: 'none', border: 'none', color: '#FF9B44', fontWeight: '800', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }} onClick={() => setPoData({...poData, items: [...poData.items, {id: Date.now(), desc: '', qty: 0, rate: 0, total: 0}]})}><Plus size={16}/> ADD LINE ITEM</button>
-          <div style={{ textAlign: 'right', background: '#fff7ed', padding: '15px 30px', borderRadius: '16px', border: '1px solid #ffedd5' }}>
-            <span style={{ color: '#9a3412', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Total Procurement Value</span>
-            <div style={{ fontSize: '28px', fontWeight: '900', color: '#1e1b4b' }}>₹ {grandTotal.toLocaleString()}</div>
+      <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <div style={{ textAlign: 'right', background: '#fff7ed', padding: '20px 40px', borderRadius: '16px' }}>
+            <span style={{ fontSize: '11px', color: '#9a3412', fontWeight: '800' }}>TOTAL PROCURED VALUE</span>
+            <div style={{ fontSize: '32px', fontWeight: '900', color: '#1e1b4b' }}>₹{grandTotal.toLocaleString()}</div>
           </div>
-        </div>
-
-        <div style={{ display: 'flex', gap: '15px', marginTop: '50px', borderTop: '1px solid #f1f5f9', paddingTop: '30px' }}>
-          <button className="btn-secondary" style={{ flex: 1, padding: '15px' }}>Save as Draft</button>
-          <button className="btn-action" style={{ flex: 2, padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}><Save size={18}/> Finalize & Transmit Purchase Order</button>
-        </div>
       </div>
+      <button onClick={() => alert("PO Finalized!")} style={{ width: '100%', marginTop: '40px', background: '#7C3AED', color: 'white', padding: '18px', borderRadius: '15px', border: 'none', fontWeight: '800', fontSize: '16px' }}>Authorize Purchase Order</button>
     </div>
   );
 };

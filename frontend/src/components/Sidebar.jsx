@@ -49,7 +49,7 @@ const Sidebar = () => {
           name: "Team Lead Portal",
           path: "/teamlead",
           icon: <Users size={20} />,
-          allowed: ["TL", "HR","Manager"],
+          allowed: ["TL", "HR", "Manager"],
         },
         {
           name: "HR Management",
@@ -76,14 +76,12 @@ const Sidebar = () => {
       items: [
         {
           name: "Attendance",
-          // path updated to match EmployeeAttendance file
           path: "/employee-attendance",
           icon: <CalendarCheck size={20} />,
           allowed: ["Manager", "TL", "HR", "Employee", "Accounts", "DM"],
         },
         {
           name: "Attendance History",
-          // path updated to match Attendance (History) file
           path: "/attendance-history",
           icon: <Calculator size={20} />,
           allowed: ["Manager", "HR"],
@@ -149,9 +147,10 @@ const Sidebar = () => {
         },
         {
           name: "Accounts Team",
-          path: "/accountsteam",
+          // UPDATED: Path synced with App.jsx to load Invoice/Ledger/PO
+          path: "/accounts-team",
           icon: <Banknote size={20} />,
-          allowed: ["Accounts"],
+          allowed: ["Accounts", "Manager"], // Manager-kum access venumna role add pannikalam
         },
       ],
     },

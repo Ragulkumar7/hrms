@@ -14,7 +14,7 @@ import Sidebar from "./components/Sidebar";
 import Accounts from "./components/Accounts";
 import AdminDashboard from "./components/AdminDashboard";
 import Attendance from "./components/Attendance";
-import EmployeeAttendance from "./components/EmployeeAttendance"; // IMPORT ADDED
+import EmployeeAttendance from "./components/EmployeeAttendance";
 import ITOperations from "./components/ITOperations";
 import Employees from "./components/Employees";
 import ManagerDashboard from "./components/ManagerDashboard";
@@ -35,6 +35,9 @@ import TeamsChat from "./components/TeamsChat";
 import DigitalManager from "./components/DigitalManager";
 import DigitalExecutive from "./components/DigitalExecutive";
 
+// --- ACCOUNTS TEAM COMPONENT (MUKKIAM) ---
+import AccountsTeam from "./components/Accountsteam"; // Invoice, Ledger, PO handle panna
+
 // --- NEW ACCOUNTS IMPORTS ---
 import purchaseorder from "./components/purchaseorder";
 import InvoiceSystem from "./components/accounts/InvoiceSystem";
@@ -43,6 +46,7 @@ import ledger from "./components/accounts/ledger";
 import { Bell, Search, ChevronDown } from "lucide-react";
 import "./App.css";
 
+// --- HEADER PROFILE ---
 const HeaderProfile = () => {
   const { user } = useUser();
   return (
@@ -57,6 +61,7 @@ const HeaderProfile = () => {
   );
 };
 
+// --- ROLE SWITCHER ---
 const RoleSwitcher = () => {
   const { user, login } = useUser();
   return (
@@ -73,36 +78,19 @@ const RoleSwitcher = () => {
         zIndex: 9999,
       }}
     >
-      <p
-        style={{
-          fontSize: "10px",
-          fontWeight: "800",
-          marginBottom: "8px",
-          color: "#6D28D9",
-          textTransform: "uppercase",
-        }}
-      >
+      <p style={{ fontSize: "10px", fontWeight: "800", marginBottom: "8px", color: "#6D28D9", textTransform: "uppercase" }}>
         Current: {user?.role}
       </p>
       <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
         {["Manager", "HR", "Accounts", "TL", "DM", "Employee"].map((role) => (
           <button
             key={role}
-            onClick={() =>
-              login(
-                role === "TL" ? "TL" : role,
-                role === "TL" ? "TL-01" : undefined,
-              )
-            }
+            onClick={() => login(role === "TL" ? "TL" : role, role === "TL" ? "TL-01" : undefined)}
             style={{
-              fontSize: "10px",
-              padding: "5px 10px",
-              cursor: "pointer",
-              border: "1px solid #DDD6FE",
+              fontSize: "10px", padding: "5px 10px", cursor: "pointer", border: "1px solid #DDD6FE",
               background: user?.role === role ? "#6D28D9" : "#F5F3FF",
               color: user?.role === role ? "white" : "#6D28D9",
-              borderRadius: "6px",
-              fontWeight: "700",
+              borderRadius: "6px", fontWeight: "700",
             }}
           >
             {role}
@@ -118,13 +106,10 @@ const DashboardHome = () => {
   if (user?.role === "Employee") return <EmployeeDashboard />;
   if (user?.role === "TL")
     return (
-      <TeamLeadDashboard
-        allTasks={[]}
-        setAllTasks={() => {}}
-        addNewTask={() => {}}
-      />
+      <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />
     );
   if (user?.role === "DM") return <DigitalMarketing />;
+  if (user?.role === "Accounts") return <AccountsTeam />; // ADDED: Accounts login panna intha jsx varum
   return <AdminDashboard />;
 };
 
@@ -157,20 +142,18 @@ function App() {
                 <Route path="/hrManagement" element={<HRManagement />} />
                 <Route path="/employees" element={<Employees />} />
                 <Route path="/manager" element={<ManagerDashboard />} />
-                <Route path="/payroll" element={<Accounts />} />
+                
+                {/* --- ACCOUNTS ROUTES (CORRECTED) --- */}
+                <Route path="/payroll" element={<Accounts />} /> {/* Older Payroll View */}
+                <Route path="/accounts-team" element={<AccountsTeam />} /> {/* New Invoice/Ledger/PO View */}
+                
                 <Route path="/purchase-order" element={<purchaseorder />} />
                 <Route path="/invoice" element={<InvoiceSystem />} />
                 <Route path="/ledger" element={<ledger />} />
                 <Route path="/it" element={<ITOperations />} />
 
-                {/* --- CORRECTED ATTENDANCE ROUTES --- */}
-                {/* 1. Clicking Attendance opens EmployeeAttendance.jsx */}
-                <Route
-                  path="/employee-attendance"
-                  element={<EmployeeAttendance />}
-                />
-
-                {/* 2. Clicking Attendance History opens Attendance.jsx */}
+                {/* --- ATTENDANCE ROUTES --- */}
+                <Route path="/employee-attendance" element={<EmployeeAttendance />} />
                 <Route path="/attendance-history" element={<Attendance />} />
 
                 <Route path="/tasks" element={<TaskManagement />} />
@@ -180,27 +163,15 @@ function App() {
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/recruitment" element={<Recruitment />} />
 
-                <Route
-                  path="/digital-marketing"
-                  element={<DigitalMarketing />}
-                />
-                <Route
-                  path="/digital-marketing/manager"
-                  element={<DigitalManager />}
-                />
-                <Route
-                  path="/digital-marketing/executive"
-                  element={<DigitalExecutive />}
-                />
+                {/* --- DIGITAL MARKETING ROUTES --- */}
+                <Route path="/digital-marketing" element={<DigitalMarketing />} />
+                <Route path="/digital-marketing/manager" element={<DigitalManager />} />
+                <Route path="/digital-marketing/executive" element={<DigitalExecutive />} />
 
                 <Route
                   path="/TeamLead"
                   element={
-                    <TeamLeadDashboard
-                      allTasks={[]}
-                      setAllTasks={() => {}}
-                      addNewTask={() => {}}
-                    />
+                    <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />
                   }
                 />
                 <Route path="/logout" element={<Logout />} />
