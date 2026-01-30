@@ -22,20 +22,19 @@ import {
   ChevronDown,
   ChevronUp,
   MessageSquare,
+  Calculator,
 } from "lucide-react";
 
 const Sidebar = () => {
   const location = useLocation();
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
-  // State to track if the Digital Marketing sub-menu is open
   const [dmOpen, setDmOpen] = useState(false);
 
   useEffect(() => {
     setIsOpen(false);
   }, [location]);
 
-  // --- MENU ITEMS ---
   const sections = [
     {
       label: "Main",
@@ -50,13 +49,13 @@ const Sidebar = () => {
           name: "Team Lead Portal",
           path: "/teamlead",
           icon: <Users size={20} />,
-          allowed: ["TL", "HR"],
+          allowed: ["TL", "HR","Manager"],
         },
         {
           name: "HR Management",
           path: "/hrManagement",
           icon: <Fingerprint size={20} />,
-          allowed: ["Manager", "TL", "HR"],
+          allowed: ["Manager", "HR"],
         },
         {
           name: "Employees Directory",
@@ -68,7 +67,7 @@ const Sidebar = () => {
           name: "Manager Portal",
           path: "/manager",
           icon: <ShieldCheck size={20} />,
-          allowed: ["Manager", "TL", "HR"],
+          allowed: ["Manager", "HR"],
         },
       ],
     },
@@ -77,9 +76,17 @@ const Sidebar = () => {
       items: [
         {
           name: "Attendance",
-          path: "/attendance",
+          // path updated to match EmployeeAttendance file
+          path: "/employee-attendance",
           icon: <CalendarCheck size={20} />,
           allowed: ["Manager", "TL", "HR", "Employee", "Accounts", "DM"],
+        },
+        {
+          name: "Attendance History",
+          // path updated to match Attendance (History) file
+          path: "/attendance-history",
+          icon: <Calculator size={20} />,
+          allowed: ["Manager", "HR"],
         },
         {
           name: "Task Management",
@@ -94,11 +101,11 @@ const Sidebar = () => {
           allowed: ["Manager", "TL", "Employee"],
         },
         {
-      name: "Teams / Chat",
-      path: "/teams",
-      icon: <MessageSquare size={20} />,
-      allowed: ["Manager", "TL", "HR", "Employee", "Accounts"],
-    },
+          name: "Teams / Chat",
+          path: "/teams",
+          icon: <MessageSquare size={20} />,
+          allowed: ["Manager", "TL", "HR", "Employee", "Accounts"],
+        },
         {
           name: "Payroll & Accounts",
           path: "/payroll",
@@ -203,7 +210,6 @@ const Sidebar = () => {
           .nav-content { display: flex; align-items: center; gap: 14px; }
           .active-dot { width: 6px; height: 6px; background: var(--sb-accent); border-radius: 50%; box-shadow: 0 0 8px var(--sb-accent); }
           
-          /* Sub-menu styling */
           .sub-menu-container { margin-left: 20px; border-left: 1px solid rgba(255,255,255,0.1); margin-top: -4px; margin-bottom: 10px; padding-left: 10px; }
           .sub-nav-item { display: block; padding: 8px 16px; color: rgba(233, 213, 255, 0.7); text-decoration: none; font-size: 13px; border-radius: 8px; transition: 0.2s; }
           .sub-nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
@@ -245,7 +251,6 @@ const Sidebar = () => {
                 <div className="nav-label">{section.label}</div>
                 <nav>
                   {section.items.map((item, iIndex) => {
-                    // Check if current item has subItems
                     const hasSubItems =
                       item.subItems && item.subItems.length > 0;
                     const isActive = location.pathname === item.path;
@@ -267,8 +272,6 @@ const Sidebar = () => {
                               <ChevronDown size={16} />
                             )}
                           </div>
-
-                          {/* SUB-MENU RENDERING */}
                           {dmOpen && (
                             <div className="sub-menu-container">
                               {item.subItems.map((sub, subIdx) => (
