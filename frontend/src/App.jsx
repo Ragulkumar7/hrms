@@ -11,7 +11,7 @@ import { UserProvider, useUser } from "./context/UserContext";
 
 // --- COMPONENT IMPORTS ---
 import Sidebar from "./components/Sidebar";
-import Accounts from "./components/Accounts";
+import Accounts from "./components/PayrollAccounts";
 import AdminDashboard from "./components/AdminDashboard";
 import Attendance from "./components/Attendance";
 import EmployeeAttendance from "./components/EmployeeAttendance";
