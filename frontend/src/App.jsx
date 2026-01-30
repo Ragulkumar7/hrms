@@ -11,7 +11,7 @@ import { UserProvider, useUser } from "./context/UserContext";
 
 // --- COMPONENT IMPORTS ---
 import Sidebar from "./components/Sidebar";
-import Accounts from "./components/Accounts";
+import Accounts from "./components/PayrollAccounts";
 import AdminDashboard from "./components/AdminDashboard";
 import Attendance from "./components/Attendance";
 import EmployeeAttendance from "./components/EmployeeAttendance";
@@ -26,6 +26,7 @@ import Sales from "./components/Sales";
 import Recruitment from "./components/Recruitment";
 import HRManagement from "./components/hrManagement";
 import TeamLeadDashboard from "./components/TeamLead";
+import TeamLeadPortal from "./components/TeamLeadPortal"; // ADDED: Import for the new progress page
 import SelfAssignedTask from "./components/SelfAssignedTask";
 import Logout from "./components/Logout";
 import DigitalMarketing from "./components/DigitalMarketing";
@@ -78,19 +79,36 @@ const RoleSwitcher = () => {
         zIndex: 9999,
       }}
     >
-      <p style={{ fontSize: "10px", fontWeight: "800", marginBottom: "8px", color: "#6D28D9", textTransform: "uppercase" }}>
+      <p
+        style={{
+          fontSize: "10px",
+          fontWeight: "800",
+          marginBottom: "8px",
+          color: "#6D28D9",
+          textTransform: "uppercase",
+        }}
+      >
         Current: {user?.role}
       </p>
       <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
         {["Manager", "HR", "Accounts", "TL", "DM", "Employee"].map((role) => (
           <button
             key={role}
-            onClick={() => login(role === "TL" ? "TL" : role, role === "TL" ? "TL-01" : undefined)}
+            onClick={() =>
+              login(
+                role === "TL" ? "TL" : role,
+                role === "TL" ? "TL-01" : undefined,
+              )
+            }
             style={{
-              fontSize: "10px", padding: "5px 10px", cursor: "pointer", border: "1px solid #DDD6FE",
+              fontSize: "10px",
+              padding: "5px 10px",
+              cursor: "pointer",
+              border: "1px solid #DDD6FE",
               background: user?.role === role ? "#6D28D9" : "#F5F3FF",
               color: user?.role === role ? "white" : "#6D28D9",
-              borderRadius: "6px", fontWeight: "700",
+              borderRadius: "6px",
+              fontWeight: "700",
             }}
           >
             {role}
@@ -106,10 +124,14 @@ const DashboardHome = () => {
   if (user?.role === "Employee") return <EmployeeDashboard />;
   if (user?.role === "TL")
     return (
-      <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />
+      <TeamLeadDashboard
+        allTasks={[]}
+        setAllTasks={() => {}}
+        addNewTask={() => {}}
+      />
     );
   if (user?.role === "DM") return <DigitalMarketing />;
-  if (user?.role === "Accounts") return <AccountsTeam />; // ADDED: Accounts login panna intha jsx varum
+  if (user?.role === "Accounts") return <AccountsTeam />;
   return <AdminDashboard />;
 };
 
@@ -142,18 +164,22 @@ function App() {
                 <Route path="/hrManagement" element={<HRManagement />} />
                 <Route path="/employees" element={<Employees />} />
                 <Route path="/manager" element={<ManagerDashboard />} />
-                
-                {/* --- ACCOUNTS ROUTES (CORRECTED) --- */}
-                <Route path="/payroll" element={<Accounts />} /> {/* Older Payroll View */}
-                <Route path="/accounts-team" element={<AccountsTeam />} /> {/* New Invoice/Ledger/PO View */}
-                
+
+                {/* --- ACCOUNTS ROUTES --- */}
+                <Route path="/payroll" element={<Accounts />} />
+                <Route path="/accounts-team" element={<AccountsTeam />} />
+
                 <Route path="/purchase-order" element={<purchaseorder />} />
                 <Route path="/invoice" element={<InvoiceSystem />} />
                 <Route path="/ledger" element={<ledger />} />
                 <Route path="/it" element={<ITOperations />} />
 
                 {/* --- ATTENDANCE ROUTES --- */}
-                <Route path="/employee-attendance" element={<EmployeeAttendance />} />
+                <Route
+                  path="/EmployeeAttendance"
+                  element={<EmployeeAttendance />}
+                />
+                <Route path="/attendance" element={<Attendance />} />
                 <Route path="/attendance-history" element={<Attendance />} />
 
                 <Route path="/tasks" element={<TaskManagement />} />
@@ -164,14 +190,29 @@ function App() {
                 <Route path="/recruitment" element={<Recruitment />} />
 
                 {/* --- DIGITAL MARKETING ROUTES --- */}
-                <Route path="/digital-marketing" element={<DigitalMarketing />} />
-                <Route path="/digital-marketing/manager" element={<DigitalManager />} />
-                <Route path="/digital-marketing/executive" element={<DigitalExecutive />} />
-
                 <Route
-                  path="/TeamLead"
+                  path="/digital-marketing"
+                  element={<DigitalMarketing />}
+                />
+                <Route
+                  path="/digital-marketing/manager"
+                  element={<DigitalManager />}
+                />
+                <Route
+                  path="/digital-marketing/executive"
+                  element={<DigitalExecutive />}
+                />
+
+                {/* --- TEAM LEAD ROUTES --- */}
+                <Route path="/teamlead" element={<TeamLeadPortal />} />
+                <Route
+                  path="/TeamLeadDashboard"
                   element={
-                    <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />
+                    <TeamLeadDashboard
+                      allTasks={[]}
+                      setAllTasks={() => {}}
+                      addNewTask={() => {}}
+                    />
                   }
                 />
                 <Route path="/logout" element={<Logout />} />
