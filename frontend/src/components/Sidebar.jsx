@@ -23,6 +23,7 @@ import {
   ChevronUp,
   MessageSquare,
   Calculator,
+  History, // Imported for My Attendance History
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -76,9 +77,15 @@ const Sidebar = () => {
       items: [
         {
           name: "Attendance",
-          path: "/employee-attendance",
+          path: "/EmployeeAttendance",
           icon: <CalendarCheck size={20} />,
           allowed: ["Manager", "TL", "HR", "Employee", "Accounts", "DM"],
+        },
+        {
+          name: "My Attendance History",
+          path: "/attendance",
+          icon: <History size={20} />,
+          allowed: ["TL"],
         },
         {
           name: "Attendance History",
@@ -147,10 +154,9 @@ const Sidebar = () => {
         },
         {
           name: "Accounts Team",
-          // UPDATED: Path synced with App.jsx to load Invoice/Ledger/PO
-          path: "/accounts-team",
+          path: "/accountsteam",
           icon: <Banknote size={20} />,
-          allowed: ["Accounts", "Manager"], // Manager-kum access venumna role add pannikalam
+          allowed: ["Accounts"],
         },
       ],
     },
@@ -192,7 +198,6 @@ const Sidebar = () => {
             --sb-hover-bg: rgba(255, 255, 255, 0.05);
             --sb-accent: #C084FC;
           }
-
           .sidebar-wrapper { display: flex; height: 100vh; position: sticky; top: 0; z-index: 1000; }
           .sidebar { width: 270px; min-width: 270px; background-image: linear-gradient(160deg, var(--sb-bg-start) 0%, var(--sb-bg-end) 100%); height: 100vh; display: flex; flex-direction: column; box-shadow: 10px 0 30px rgba(0,0,0,0.25); font-family: 'Inter', sans-serif; color: var(--sb-text); transition: transform 0.3s ease; }
           .sidebar-header { padding: 25px; display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.1); border-bottom: 1px solid rgba(255,255,255,0.08); }
@@ -208,19 +213,16 @@ const Sidebar = () => {
           .nav-item.active .nav-icon { color: var(--sb-accent); filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.5)); }
           .nav-content { display: flex; align-items: center; gap: 14px; }
           .active-dot { width: 6px; height: 6px; background: var(--sb-accent); border-radius: 50%; box-shadow: 0 0 8px var(--sb-accent); }
-          
           .sub-menu-container { margin-left: 20px; border-left: 1px solid rgba(255,255,255,0.1); margin-top: -4px; margin-bottom: 10px; padding-left: 10px; }
           .sub-nav-item { display: block; padding: 8px 16px; color: rgba(233, 213, 255, 0.7); text-decoration: none; font-size: 13px; border-radius: 8px; transition: 0.2s; }
           .sub-nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
           .sub-nav-item.active { color: var(--sb-accent); font-weight: 600; }
-
           .profile-card { margin: 20px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; }
           .avatar-circle { width: 36px; height: 36px; background: linear-gradient(135deg, #F472B6, #9333EA); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 14px; }
           .user-details h4 { margin: 0; font-size: 13px; color: white; }
           .user-details p { margin: 0; font-size: 11px; color: rgba(255,255,255,0.5); }
           .logout-btn { background: rgba(255,255,255,0.1); border: none; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #FCA5A5; cursor: pointer; transition: 0.2s; }
           .logout-btn:hover { background: #EF4444; color: white; }
-          
           @media (max-width: 968px) { .mobile-toggle { display: flex; position: fixed; top: 15px; left: 15px; z-index: 1100; background: var(--sb-bg-end); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); } .sidebar { position: fixed; left: 0; top: 0; height: 100vh; transform: translateX(-100%); z-index: 1200; } .sidebar.open { transform: translateX(0); } .sidebar-overlay { display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1150; opacity: 0; pointer-events: none; transition: opacity 0.3s; } .sidebar-overlay.visible { opacity: 1; pointer-events: auto; } }
         `}
       </style>

@@ -78,19 +78,36 @@ const RoleSwitcher = () => {
         zIndex: 9999,
       }}
     >
-      <p style={{ fontSize: "10px", fontWeight: "800", marginBottom: "8px", color: "#6D28D9", textTransform: "uppercase" }}>
+      <p
+        style={{
+          fontSize: "10px",
+          fontWeight: "800",
+          marginBottom: "8px",
+          color: "#6D28D9",
+          textTransform: "uppercase",
+        }}
+      >
         Current: {user?.role}
       </p>
       <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
         {["Manager", "HR", "Accounts", "TL", "DM", "Employee"].map((role) => (
           <button
             key={role}
-            onClick={() => login(role === "TL" ? "TL" : role, role === "TL" ? "TL-01" : undefined)}
+            onClick={() =>
+              login(
+                role === "TL" ? "TL" : role,
+                role === "TL" ? "TL-01" : undefined,
+              )
+            }
             style={{
-              fontSize: "10px", padding: "5px 10px", cursor: "pointer", border: "1px solid #DDD6FE",
+              fontSize: "10px",
+              padding: "5px 10px",
+              cursor: "pointer",
+              border: "1px solid #DDD6FE",
               background: user?.role === role ? "#6D28D9" : "#F5F3FF",
               color: user?.role === role ? "white" : "#6D28D9",
-              borderRadius: "6px", fontWeight: "700",
+              borderRadius: "6px",
+              fontWeight: "700",
             }}
           >
             {role}
@@ -106,10 +123,14 @@ const DashboardHome = () => {
   if (user?.role === "Employee") return <EmployeeDashboard />;
   if (user?.role === "TL")
     return (
-      <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />
+      <TeamLeadDashboard
+        allTasks={[]}
+        setAllTasks={() => {}}
+        addNewTask={() => {}}
+      />
     );
   if (user?.role === "DM") return <DigitalMarketing />;
-  if (user?.role === "Accounts") return <AccountsTeam />; // ADDED: Accounts login panna intha jsx varum
+  if (user?.role === "Accounts") return <AccountsTeam />;
   return <AdminDashboard />;
 };
 
@@ -142,18 +163,27 @@ function App() {
                 <Route path="/hrManagement" element={<HRManagement />} />
                 <Route path="/employees" element={<Employees />} />
                 <Route path="/manager" element={<ManagerDashboard />} />
-                
-                {/* --- ACCOUNTS ROUTES (CORRECTED) --- */}
-                <Route path="/payroll" element={<Accounts />} /> {/* Older Payroll View */}
-                <Route path="/accounts-team" element={<AccountsTeam />} /> {/* New Invoice/Ledger/PO View */}
-                
+
+                {/* --- ACCOUNTS ROUTES --- */}
+                <Route path="/payroll" element={<Accounts />} />
+                <Route path="/accounts-team" element={<AccountsTeam />} />
+
                 <Route path="/purchase-order" element={<purchaseorder />} />
                 <Route path="/invoice" element={<InvoiceSystem />} />
                 <Route path="/ledger" element={<ledger />} />
                 <Route path="/it" element={<ITOperations />} />
 
                 {/* --- ATTENDANCE ROUTES --- */}
-                <Route path="/employee-attendance" element={<EmployeeAttendance />} />
+                {/* 1. Clicking Attendance opens EmployeeAttendance.jsx */}
+                <Route
+                  path="/EmployeeAttendance"
+                  element={<EmployeeAttendance />}
+                />
+
+                {/* 2. Clicking Attendance History (or My History) opens Attendance.jsx */}
+                <Route path="/attendance" element={<Attendance />} />
+
+                {/* 3. Global Attendance Summary Path */}
                 <Route path="/attendance-history" element={<Attendance />} />
 
                 <Route path="/tasks" element={<TaskManagement />} />
@@ -164,14 +194,27 @@ function App() {
                 <Route path="/recruitment" element={<Recruitment />} />
 
                 {/* --- DIGITAL MARKETING ROUTES --- */}
-                <Route path="/digital-marketing" element={<DigitalMarketing />} />
-                <Route path="/digital-marketing/manager" element={<DigitalManager />} />
-                <Route path="/digital-marketing/executive" element={<DigitalExecutive />} />
+                <Route
+                  path="/digital-marketing"
+                  element={<DigitalMarketing />}
+                />
+                <Route
+                  path="/digital-marketing/manager"
+                  element={<DigitalManager />}
+                />
+                <Route
+                  path="/digital-marketing/executive"
+                  element={<DigitalExecutive />}
+                />
 
                 <Route
                   path="/TeamLead"
                   element={
-                    <TeamLeadDashboard allTasks={[]} setAllTasks={() => {}} addNewTask={() => {}} />
+                    <TeamLeadDashboard
+                      allTasks={[]}
+                      setAllTasks={() => {}}
+                      addNewTask={() => {}}
+                    />
                   }
                 />
                 <Route path="/logout" element={<Logout />} />
