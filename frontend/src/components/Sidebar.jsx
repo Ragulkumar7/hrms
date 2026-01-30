@@ -21,6 +21,7 @@ import {
   Phone,
   ChevronDown,
   ChevronUp,
+  MessageSquare,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -92,6 +93,12 @@ const Sidebar = () => {
           icon: <UserCheck size={20} />,
           allowed: ["Manager", "TL", "Employee"],
         },
+        {
+      name: "Teams / Chat",
+      path: "/teams",
+      icon: <MessageSquare size={20} />,
+      allowed: ["Manager", "TL", "HR", "Employee", "Accounts"],
+    },
         {
           name: "Payroll & Accounts",
           path: "/payroll",

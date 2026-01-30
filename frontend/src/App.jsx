@@ -28,7 +28,7 @@ import TeamLeadDashboard from "./components/TeamLead";
 import SelfAssignedTask from "./components/SelfAssignedTask";
 import Logout from "./components/Logout";
 import DigitalMarketing from "./components/DigitalMarketing"; // Added Import
-
+import TeamsChat from "./components/TeamsChat";
 // --- NEW ACCOUNTS IMPORTS ---
 import purchaseorder from "./components/purchaseorder";
 import InvoiceSystem from "./components/accounts/InvoiceSystem";
@@ -195,6 +195,7 @@ function App() {
             <div className="content-area">
               <Routes>
                 <Route path="/" element={<DashboardHome />} />
+                <Route path="/teams" element={<TeamsChat />} />
                 <Route path="/hrManagement" element={<HRManagement />} />
                 <Route path="/employees" element={<Employees />} />
                 <Route path="/manager" element={<ManagerDashboard />} />
