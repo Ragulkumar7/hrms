@@ -14,6 +14,7 @@ import Sidebar from "./components/Sidebar";
 import Accounts from "./components/Accounts";
 import AdminDashboard from "./components/AdminDashboard";
 import Attendance from "./components/Attendance";
+import EmployeeAttendance from "./components/EmployeeAttendance"; // IMPORT ADDED
 import ITOperations from "./components/ITOperations";
 import Employees from "./components/Employees";
 import ManagerDashboard from "./components/ManagerDashboard";
@@ -31,8 +32,8 @@ import DigitalMarketing from "./components/DigitalMarketing";
 import TeamsChat from "./components/TeamsChat";
 
 // --- SEPARATE DIGITAL MARKETING IMPORTS ---
-import DigitalManager from "./components/DigitalManager"; // Updated to your separate file
-import DigitalExecutive from "./components/DigitalExecutive"; // Updated to your separate file
+import DigitalManager from "./components/DigitalManager";
+import DigitalExecutive from "./components/DigitalExecutive";
 
 // --- NEW ACCOUNTS IMPORTS ---
 import purchaseorder from "./components/purchaseorder";
@@ -161,7 +162,17 @@ function App() {
                 <Route path="/invoice" element={<InvoiceSystem />} />
                 <Route path="/ledger" element={<ledger />} />
                 <Route path="/it" element={<ITOperations />} />
-                <Route path="/attendance" element={<Attendance />} />
+
+                {/* --- CORRECTED ATTENDANCE ROUTES --- */}
+                {/* 1. Clicking Attendance opens EmployeeAttendance.jsx */}
+                <Route
+                  path="/employee-attendance"
+                  element={<EmployeeAttendance />}
+                />
+
+                {/* 2. Clicking Attendance History opens Attendance.jsx */}
+                <Route path="/attendance-history" element={<Attendance />} />
+
                 <Route path="/tasks" element={<TaskManagement />} />
                 <Route path="/self-task" element={<SelfAssignedTask />} />
                 <Route path="/reports" element={<Reports />} />
@@ -169,7 +180,6 @@ function App() {
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/recruitment" element={<Recruitment />} />
 
-                {/* --- CORRECTED ROUTES FOR SEPARATE FILES --- */}
                 <Route
                   path="/digital-marketing"
                   element={<DigitalMarketing />}
